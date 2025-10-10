@@ -1,0 +1,39 @@
+Package: scrapple
+Version: 0.99.0
+Date: 2025-10-09
+Title: User-Friendly Functions for Single-cell RNA-seq Analysis
+Description: 
+    Implements user-friendly wrappers to the low-level utilities from the scrapper package.
+    The wrapper functions provide interoperability with SummarizedExperiment objects and more convenient formatting of results.
+    The goal is to improve the ergonomics of a scRNA-seq analysis in an interactive session or script.    
+    In contrast, the scrapper functions are more spartan and intended for other package developers.
+License: MIT + file LICENSE
+Authors@R: person("Aaron", "Lun", role=c("cre", "aut"), email="infinite.monkeys.with.keyboards@gmail.com")
+Depends:
+    S4Vectors,
+    SummarizedExperiment,
+    SingleCellExperiment
+Imports:
+    scrapper,
+Suggests:
+    testthat,
+    BiocStyle,
+    knitr,
+    rmarkdown,
+    scRNAseq
+biocViews: 
+    Normalization, 
+    RNASeq, 
+    Software, 
+    GeneExpression,
+    Transcriptomics, 
+    SingleCell, 
+    BatchEffect, 
+    QualityControl,
+    DifferentialExpression,
+    FeatureExtraction,
+    PrincipalComponent,
+    Clustering
+VignetteBuilder: knitr
+Encoding: UTF-8
+RoxygenNote: 7.3.3
