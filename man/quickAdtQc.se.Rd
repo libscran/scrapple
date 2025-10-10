@@ -20,7 +20,8 @@ quickAdtQc.se(
 attachAdtQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
 }
 \arguments{
-\item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.}
+\item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
+Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.}
 
 \item{subsets}{List of vectors specifying tag subsets of interest, typically control tags like IgGs.
 Each vector may be logical (whether to keep each row), integer (row indices) or character (row names).}

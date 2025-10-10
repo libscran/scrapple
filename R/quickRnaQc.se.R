@@ -3,6 +3,7 @@
 #' Quickly compute quality control (QC) metrics, thresholds and filters from RNA data in a \link[SummarizedExperiment]{SummarizedExperiment}.
 #' 
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
+#' Rows correspond to genes and columns correspond to cells.
 #' @inheritParams scrapper::computeRnaQcMetrics
 #' @inheritParams scrapper::suggestRnaQcThresholds
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the RNA count matrix.

@@ -21,7 +21,8 @@ quickRnaQc.se(
 attachRnaQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
 }
 \arguments{
-\item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.}
+\item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
+Rows correspond to genes and columns correspond to cells.}
 
 \item{subsets}{List of vectors specifying gene subsets of interest, typically for control-like features like mitochondrial genes or spike-in transcripts.
 Each vector may be logical (whether to keep each row), integer (row indices) or character (row names).}

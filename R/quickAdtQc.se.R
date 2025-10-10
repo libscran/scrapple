@@ -3,6 +3,7 @@
 #' Quickly compute quality control (QC) metrics, thresholds and filters from ADT data in a \link[SummarizedExperiment]{SummarizedExperiment}.
 #' 
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
+#' Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
 #' @inheritParams scrapper::computeAdtQcMetrics
 #' @inheritParams scrapper::suggestAdtQcThresholds
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the ADT count matrix.
