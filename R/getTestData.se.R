@@ -36,27 +36,49 @@ cache$crispr <- list()
 #' 
 #' @export
 #' @name getTestData.se
-getTestRnaData.se <- function(at = "start") {
+getTestRnaData.se <- function(at = c("start", "qc")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$rna))) {
         cache$rna$start <- scRNAseq::fetchDataset("zeisel-brain-2015", "2023-12-14", realize.assays=TRUE)
     }
+    sce <- cache$rna$start
     if (at == "start") {
-        return(cache$rna[[at]])
+        return(sce)
+    }
+
+    if (!("qc" %in% names(cache$rna))) {
+        sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "mt-")), altexp.proportions=c(ercc="ERCC"))
+        sce <- sce[,sce$keep]
+        cache$rna$qc <- sce
+    }
+    if (at == "qc") {
+        return(sce)
     }
 }
 
 #' @export
 #' @rdname getTestData.se
-getTestAdtData.se <- function(at = "start") {
+getTestAdtData.se <- function(at = c("start", "qc")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$adt))) {
         cache$adt$start <- scRNAseq::fetchDataset("kotliarov-pbmc-2020", "2024-04-18", realize.assays=TRUE)
     }
+    sce <- cache$adt$start
     if (at == "start") {
-        return(cache$adt[[at]])
+        return(sce)
+    }
+
+    if (!("qc" %in% names(cache$rna))) {
+        sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "MT-")))
+        altExp(sce, "ADT") <- quickAdtQc.se(altExp(sce, "ADT"), subsets=list(igg=rowData(altExp(sce, "ADT"))$isotype))
+        sce <- sce[,sce$keep & altExp(sce, "ADT")$keep]
+        cache$rna$qc <- sce
+    }
+    sce <- cache$rna$qc
+    if (at == "qc") {
+        return(sce)
     }
 }
 

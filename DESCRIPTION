@@ -14,7 +14,9 @@ Depends:
     SummarizedExperiment,
     SingleCellExperiment
 Imports:
-    scrapper,
+    Matrix,
+    BiocGenerics,
+    scrapper
 Suggests:
     testthat,
     BiocStyle,
