@@ -8,9 +8,9 @@
 quickAdtQc.se(
   x,
   subsets = list(),
-  block = NULL,
-  num.mads = 3,
   num.threads = 1,
+  num.mads = 3,
+  block = NULL,
   assay.type = "counts",
   prefix = NULL,
   flatten = TRUE,
@@ -23,17 +23,9 @@ attachAdtQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.}
 
-\item{subsets}{List of vectors specifying tag subsets of interest, typically control tags like IgGs.
-Each vector may be logical (whether to keep each row), integer (row indices) or character (row names).}
+\item{subsets, num.threads}{Arguments passed to \code{\link[scrapper]{computeAdtQcMetrics}}.}
 
-\item{block}{Factor specifying the block of origin (e.g., batch, sample) for each cell in \code{metrics}.
-Alternatively \code{NULL} if all cells are from the same block.
-
-For \code{filterAdtQcMetrics}, a blocking factor should be provided if \code{block} was used to construct \code{thresholds}.}
-
-\item{num.mads}{Number of median from the median, to define the threshold for outliers in each metric.}
-
-\item{num.threads}{Integer scalar specifying the number of threads to use.}
+\item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestAdtQcThresholds}}.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the ADT count matrix.}
 
@@ -43,8 +35,6 @@ For \code{filterAdtQcMetrics}, a blocking factor should be provided if \code{blo
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
 
 \item{raw}{Logical scalar indicating whether to return the QC results directly.}
-
-\item{metrics}{List with the same structure as produced by \code{computeAdtQcMetrics}.}
 }
 \value{
 For \code{quickAdtQc.se}:

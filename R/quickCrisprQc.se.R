@@ -4,8 +4,8 @@
 #' 
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to CRISPR guides and columns correspond to cells.
-#' @inheritParams scrapper::computeCrisprQcMetrics
-#' @inheritParams scrapper::suggestCrisprQcThresholds
+#' @param num.threads Arguments passed to \code{\link[scrapper]{computeCrisprQcMetrics}}.
+#' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestCrisprQcThresholds}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the CRISPR count matrix.
 #' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
@@ -54,9 +54,9 @@
 #' @importFrom S4Vectors metadata metadata<-
 quickCrisprQc.se <- function( 
     x,
-    block = NULL,
-    num.mads = 3,
     num.threads = 1,
+    num.mads = 3,
+    block = NULL,
     assay.type = "counts",
     prefix = NULL, 
     flatten = TRUE,

@@ -4,8 +4,8 @@
 #' 
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
-#' @inheritParams scrapper::computeAdtQcMetrics
-#' @inheritParams scrapper::suggestAdtQcThresholds
+#' @param subsets,num.threads Arguments passed to \code{\link[scrapper]{computeAdtQcMetrics}}.
+#' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestAdtQcThresholds}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the ADT count matrix.
 #' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
@@ -56,9 +56,9 @@
 quickAdtQc.se <- function( 
     x,
     subsets = list(),
-    block = NULL,
-    num.mads = 3,
     num.threads = 1,
+    num.mads = 3,
+    block = NULL,
     assay.type = "counts",
     prefix = NULL, 
     flatten = TRUE,

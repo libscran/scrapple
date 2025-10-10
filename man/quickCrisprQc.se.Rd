@@ -7,9 +7,9 @@
 \usage{
 quickCrisprQc.se(
   x,
-  block = NULL,
-  num.mads = 3,
   num.threads = 1,
+  num.mads = 3,
+  block = NULL,
   assay.type = "counts",
   prefix = NULL,
   flatten = TRUE,
@@ -22,14 +22,9 @@ attachCrisprQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 Rows correspond to CRISPR guides and columns correspond to cells.}
 
-\item{block}{Factor specifying the block of origin (e.g., batch, sample) for each cell in \code{metrics}.
-Alternatively \code{NULL} if all cells are from the same block.
+\item{num.threads}{Arguments passed to \code{\link[scrapper]{computeCrisprQcMetrics}}.}
 
-For \code{filterCrisprQcMetrics}, a blocking factor should be provided if \code{block} was used to construct \code{thresholds}.}
-
-\item{num.mads}{Number of median from the median, to define the threshold for outliers in each metric.}
-
-\item{num.threads}{Integer scalar specifying the number of threads to use.}
+\item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestCrisprQcThresholds}}.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the CRISPR count matrix.}
 
@@ -39,8 +34,6 @@ For \code{filterCrisprQcMetrics}, a blocking factor should be provided if \code{
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
 
 \item{raw}{Logical scalar indicating whether to return the QC results directly.}
-
-\item{metrics}{List with the same structure as produced by \code{computeCrisprQcMetrics}.}
 }
 \value{
 For \code{quickCrisprQc.se}:
@@ -62,7 +55,7 @@ Quickly compute quality control (QC) metrics, thresholds and filters from CRISPR
 \examples{
 sce <- altExp(getTestCrisprData.se(), "CRISPR Guide Capture")
 sce <- quickCrisprQc.se(sce)
-colData(sce)[,c("sum", "detected", "igg.sum")]
+colData(sce)[,c("sum", "detected", "max.value", "max.index")]
 metadata(sce)$thresholds
 summary(sce$keep)
 
@@ -70,7 +63,7 @@ summary(sce$keep)
 sce <- altExp(getTestCrisprData.se(), "CRISPR Guide Capture")
 res <- quickCrisprQc.se(sce, raw=TRUE)
 sce <- attachCrisprQcMetrics.se(sce, res$metrics, prefix="crispr.qc.")
-res$thresholds$max.value <- 10 # manual override of the sum threshold
+res$thresholds$max.value <- 50 # manual override of the max value threshold
 sce$crispr.qc.keep <- scrapper::filterCrisprQcMetrics(res$thresholds, res$metrics)
 
 }

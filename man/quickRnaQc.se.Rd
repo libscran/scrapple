@@ -8,11 +8,11 @@
 quickRnaQc.se(
   x,
   subsets = list(),
-  block = NULL,
-  num.mads = 3,
   num.threads = 1,
-  assay.type = "counts",
+  num.mads = 3,
+  block = NULL,
   altexp.proportions = NULL,
+  assay.type = "counts",
   prefix = NULL,
   flatten = TRUE,
   raw = FALSE
@@ -24,24 +24,16 @@ attachRnaQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 Rows correspond to genes and columns correspond to cells.}
 
-\item{subsets}{List of vectors specifying gene subsets of interest, typically for control-like features like mitochondrial genes or spike-in transcripts.
-Each vector may be logical (whether to keep each row), integer (row indices) or character (row names).}
+\item{subsets, num.threads}{Arguments passed to \code{\link[scrapper]{computeRnaQcMetrics}}.}
 
-\item{block}{Factor specifying the block of origin (e.g., batch, sample) for each cell in \code{metrics}.
-Alternatively \code{NULL} if all cells are from the same block.
-
-For \code{filterRnaQcMetrics}, a blocking factor should be provided if \code{block} was used to construct \code{thresholds}.}
-
-\item{num.mads}{Number of median from the median, to define the threshold for outliers in each metric.}
-
-\item{num.threads}{Integer scalar specifying the number of threads to use.}
-
-\item{assay.type}{Integer or string specifying the assay of \code{x} containing the RNA count matrix.}
+\item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestRnaQcThresholds}}.}
 
 \item{altexp.proportions}{Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
 For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
 The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
 This parameter is typically used to refer to alternative experiments holding spike-in data.}
+
+\item{assay.type}{Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.}
 
 \item{prefix}{String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.}
 
@@ -49,8 +41,6 @@ This parameter is typically used to refer to alternative experiments holding spi
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
 
 \item{raw}{Logical scalar indicating whether to return the QC results directly.}
-
-\item{metrics}{List with the same structure as produced by \code{computeRnaQcMetrics}.}
 }
 \value{
 For \code{quickRnaQc.se}:

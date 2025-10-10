@@ -4,13 +4,13 @@
 #' 
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to genes and columns correspond to cells.
-#' @inheritParams scrapper::computeRnaQcMetrics
-#' @inheritParams scrapper::suggestRnaQcThresholds
-#' @param assay.type Integer or string specifying the assay of \code{x} containing the RNA count matrix.
+#' @param subsets,num.threads Arguments passed to \code{\link[scrapper]{computeRnaQcMetrics}}.
+#' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestRnaQcThresholds}}.
 #' @param altexp.proportions Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
 #' For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
 #' The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
 #' This parameter is typically used to refer to alternative experiments holding spike-in data. 
+#' @param assay.type Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.
 #' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
@@ -69,11 +69,11 @@
 quickRnaQc.se <- function( 
     x,
     subsets = list(),
-    block = NULL,
-    num.mads = 3,
     num.threads = 1,
-    assay.type = "counts",
+    num.mads = 3,
+    block = NULL,
     altexp.proportions = NULL,
+    assay.type = "counts",
     prefix = NULL, 
     flatten = TRUE,
     raw = FALSE
