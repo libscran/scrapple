@@ -7,7 +7,7 @@
 \alias{getTestCrisprData.se}
 \title{Get a test scRNA-seq dataset}
 \usage{
-getTestRnaData.se(at = c("start", "qc"))
+getTestRnaData.se(at = c("start", "qc", "norm"))
 
 getTestAdtData.se(at = c("start", "qc"))
 
