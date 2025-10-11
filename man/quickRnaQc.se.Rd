@@ -29,13 +29,11 @@ Rows correspond to genes and columns correspond to cells.}
 \item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestRnaQcThresholds}}.}
 
 \item{altexp.proportions}{Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
-For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
-The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
-This parameter is typically used to refer to alternative experiments holding spike-in data.}
+These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.}
 
-\item{prefix}{String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.}
+\item{prefix}{String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{colData}}.}
 
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
@@ -54,10 +52,20 @@ The \code{colData} also contains a \code{keep} column, specifying which cells ar
 and \code{keep}, the result of \code{\link[scrapper]{FilterRnaQcMetrics}}.
 }
 
+If \code{altexp.proportions} is provided and \code{raw=FALSE},
+QC metrics are added to the \code{colData} of the specified alternative experiments in the output object.
+If \code{raw=TRUE}, an additional \code{altexp} element will be present in the list, containing the QC metrics from each alternative experiment.
+
 For \code{attachRnaQcMetrics.se}. \code{x} is returned with additional columns added to its \code{colData}.
 }
 \description{
 Quickly compute quality control (QC) metrics, thresholds and filters from RNA data in a \link[SummarizedExperiment]{SummarizedExperiment}.
+}
+\details{
+\code{altexp.proportions} is typically used to refer to alternative experiments holding spike-in data.
+For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
+The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
+If the vector itself is named, those names are used in the column names of the output proportions, rather than the names of the alternative experiments.
 }
 \examples{
 sce <- getTestRnaData.se()
@@ -74,6 +82,7 @@ sce <- quickRnaQc.se(
    altexp.proportions="ERCC"
 )
 colData(sce)[,c("sum", "detected", "mito.proportion", "ERCC.proportion")]
+colData(altExp(sce))[,c("sum", "detected")]
 
 # We can also manually execute many of the steps:
 sce <- getTestRnaData.se()
