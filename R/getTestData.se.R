@@ -36,7 +36,7 @@ cache$crispr <- list()
 #' 
 #' @export
 #' @name getTestData.se
-getTestRnaData.se <- function(at = c("start", "qc", "norm")) {
+getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$rna))) {
@@ -63,6 +63,15 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm")) {
     }
     sce <- cache$rna$norm
     if (at == "norm") {
+        return(sce)
+    }
+
+    if (!("hvg" %in% names(cache$rna))) {
+        sce <- chooseRnaHvgs.se(sce, use.min.width=TRUE)
+        cache$rna$hvg <- sce
+    }
+    sce <- cache$rna$hvg
+    if (at == "hvg") {
         return(sce)
     }
 }
