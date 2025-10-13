@@ -7,7 +7,7 @@
 \usage{
 quickRnaQc.se(
   x,
-  subsets = list(),
+  subsets,
   num.threads = 1,
   num.mads = 3,
   block = NULL,
@@ -82,7 +82,7 @@ sce <- quickRnaQc.se(
    altexp.proportions="ERCC"
 )
 colData(sce)[,c("sum", "detected", "mito.proportion", "ERCC.proportion")]
-colData(altExp(sce))[,c("sum", "detected")]
+colData(altExp(sce, "ERCC"))[,c("sum", "detected")]
 
 # We can also manually execute many of the steps:
 sce <- getTestRnaData.se()

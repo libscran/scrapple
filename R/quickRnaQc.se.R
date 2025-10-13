@@ -77,7 +77,7 @@
 #' @importFrom S4Vectors metadata metadata<-
 quickRnaQc.se <- function( 
     x,
-    subsets = list(),
+    subsets,
     num.threads = 1,
     num.mads = 3,
     block = NULL,

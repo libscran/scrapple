@@ -7,7 +7,7 @@
 \usage{
 quickAdtQc.se(
   x,
-  subsets = list(),
+  subsets,
   num.threads = 1,
   num.mads = 3,
   block = NULL,
