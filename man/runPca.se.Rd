@@ -9,6 +9,7 @@ runPca.se(
   features,
   number = 25,
   block = NULL,
+  num.threads = 1,
   more.pca.args = list(),
   assay.type = "logcounts",
   prefix = NULL,
@@ -23,7 +24,7 @@ Rows correspond to genomic features and columns correspond to cells.}
 For RNA data, this is typically the \code{hvg} vector added by \code{\link{chooseRnaHvgs.se}}.
 If \code{NULL}, all available features are used.}
 
-\item{number, block}{Arguments to pass to \code{\link[scrapper]{runPca}}.}
+\item{number, block, num.threads}{Arguments to pass to \code{\link[scrapper]{runPca}}.}
 
 \item{more.pca.args}{Named list of additional arguments to pass to \code{\link[scrapper]{runPca}}.}
 

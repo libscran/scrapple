@@ -7,7 +7,7 @@
 #' @param features Integer, logical or character vector containing the features of interest to use in the PCA.
 #' For RNA data, this is typically the \code{hvg} vector added by \code{\link{chooseRnaHvgs.se}}.
 #' If \code{NULL}, all available features are used.
-#' @param number,block Arguments to pass to \code{\link[scrapper]{runPca}}.
+#' @param number,block,num.threads Arguments to pass to \code{\link[scrapper]{runPca}}.
 #' @param more.pca.args Named list of additional arguments to pass to \code{\link[scrapper]{runPca}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} to be used for PCA.
 #' This is typically the log-normalized expression matrix created by \code{\link{normalizeRnaCounts.se}}.
@@ -37,6 +37,7 @@ runPca.se <- function(
     features,
     number = 25,
     block = NULL,
+    num.threads = 1,
     more.pca.args = list(),
     assay.type = "logcounts",
     prefix = NULL,
@@ -47,7 +48,16 @@ runPca.se <- function(
         y <- DelayedArray(y)[features,,drop=FALSE] # ensure that no copy is made.
     }
 
-    out <- do.call(scrapper::runPca, c(list(y, number=number, block=block), more.pca.args))
+    out <- do.call(
+        scrapper::runPca,
+        c(
+            list(y),
+            .collapse_args(
+                list(number=number, block=block, num.threads=num.threads),
+                more.pca.args
+            )
+        )
+    )
 
     reducedDim(x, output.name) <- t(out$components)
     for (extras in setdiff(names(out), "components")) {
