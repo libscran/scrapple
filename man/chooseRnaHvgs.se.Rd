@@ -7,19 +7,10 @@
 chooseRnaHvgs.se(
   x,
   block = NULL,
-  block.weight.policy = "variable",
-  variable.block.weight = c(0, 1000),
-  mean.filter = TRUE,
-  min.mean = 0.1,
-  transform = TRUE,
-  span = 0.3,
-  use.min.width = FALSE,
-  min.width = 1,
-  min.window.count = 200,
   num.threads = 1,
+  more.var.args = list(),
   top = 4000,
-  keep.ties = TRUE,
-  bound = 0,
+  more.choose.args = list(),
   assay.type = "logcounts",
   prefix = NULL,
   include.per.block = FALSE
@@ -29,9 +20,13 @@ chooseRnaHvgs.se(
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 Rows correspond to genes and columns correspond to cells.}
 
-\item{block, block.weight.policy, variable.block.weight, mean.filter, min.mean, transform, span, use.min.width, min.width, min.window.count, num.threads}{Arguments passed to \code{\link[scrapper]{modelGeneVariances}}.}
+\item{block, num.threads}{Arguments passed to \code{\link[scrapper]{modelGeneVariances}}.}
 
-\item{top, keep.ties, bound}{Arguments passed to \code{\link[scrapper]{chooseHighlyVariableGenes}}.}
+\item{more.var.args}{Named list of arguments to pass to \code{\link[scrapper]{modelGeneVariances}}.}
+
+\item{top}{Arguments passed to \code{\link[scrapper]{chooseHighlyVariableGenes}}.}
+
+\item{more.choose.args}{Named list of arguments to pass to \code{\link[scrapper]{chooseHighlyVariableGenes}}.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the log-normalized expression matrix for the RNA data.}
 
@@ -50,7 +45,7 @@ Model the mean-variance relationship across genes and choose highly variable gen
 }
 \examples{
 sce <- getTestRnaData.se("norm")
-sce <- chooseRnaHvgs.se(sce, use.min.width=TRUE)
+sce <- chooseRnaHvgs.se(sce, more.var.args=list(use.min.width=TRUE))
 summary(rowData(sce)$hvg)
 
 plot(rowData(sce)$means, rowData(sce)$variances, col=factor(rowData(sce)$hvg))

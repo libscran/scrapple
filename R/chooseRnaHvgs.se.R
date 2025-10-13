@@ -4,9 +4,10 @@
 #'
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to genes and columns correspond to cells.
-#' @param block,block.weight.policy,variable.block.weight,mean.filter,min.mean,transform,span,use.min.width,min.width,min.window.count,num.threads
-#' Arguments passed to \code{\link[scrapper]{modelGeneVariances}}.
-#' @param top,keep.ties,bound Arguments passed to \code{\link[scrapper]{chooseHighlyVariableGenes}}.
+#' @param block,num.threads Arguments passed to \code{\link[scrapper]{modelGeneVariances}}.
+#' @param more.var.args Named list of arguments to pass to \code{\link[scrapper]{modelGeneVariances}}.
+#' @param top Arguments passed to \code{\link[scrapper]{chooseHighlyVariableGenes}}.
+#' @param more.choose.args Named list of arguments to pass to \code{\link[scrapper]{chooseHighlyVariableGenes}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the log-normalized expression matrix for the RNA data.
 #' @param prefix String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{rowData}}.
 #' @param include.per.block Logical scalar indicating whether the per-block statistics should be stored in the output object.
@@ -18,7 +19,7 @@
 #'
 #' @examples
 #' sce <- getTestRnaData.se("norm")
-#' sce <- chooseRnaHvgs.se(sce, use.min.width=TRUE)
+#' sce <- chooseRnaHvgs.se(sce, more.var.args=list(use.min.width=TRUE))
 #' summary(rowData(sce)$hvg)
 #'
 #' plot(rowData(sce)$means, rowData(sce)$variances, col=factor(rowData(sce)$hvg))
@@ -29,36 +30,23 @@
 chooseRnaHvgs.se <- function(
     x, 
     block = NULL,
-    block.weight.policy = "variable",
-    variable.block.weight = c(0, 1000),
-    mean.filter = TRUE,
-    min.mean = 0.1,
-    transform = TRUE,
-    span = 0.3,
-    use.min.width = FALSE,
-    min.width = 1,
-    min.window.count = 200,
     num.threads = 1,
+    more.var.args = list(),
     top = 4000,
-    keep.ties = TRUE,
-    bound = 0,
+    more.choose.args = list(),
     assay.type = "logcounts",
     prefix = NULL,
     include.per.block = FALSE
 ) {
-    info <- scrapper::modelGeneVariances(
-        assay(x, assay.type),
-        block=block,
-        block.weight.policy=block.weight.policy,
-        variable.block.weight=variable.block.weight,
-        mean.filter=mean.filter,
-        min.mean=min.mean,
-        transform=transform,
-        span=span,
-        use.min.width=use.min.width,
-        min.width=min.width,
-        min.window.count=min.window.count,
-        num.threads=num.threads
+    info <- do.call(
+        scrapper::modelGeneVariances,
+        c(
+            list(assay(x, assay.type)),
+            .collapse_args(
+                list(block=block, num.threads=num.threads),
+                more.var.args
+            )
+        )
     )
 
     colnames(info$statistics) <- paste0(prefix, colnames(info$statistics))
@@ -72,8 +60,18 @@ chooseRnaHvgs.se <- function(
         rowData(x)[[paste0(prefix, "per.block")]] <- tmp
     }
 
+    hvg.index <- do.call(
+        scrapper::chooseHighlyVariableGenes,
+        c(
+            list(info$statistics$residuals),
+            .collapse_args(
+                list(top=top, larger=TRUE),
+                more.choose.args
+            )
+        )
+    )
+
     is.hvg <- logical(nrow(x))
-    hvg.index <- scrapper::chooseHighlyVariableGenes(info$statistics$residuals, top=top, larger=TRUE, keep.ties=keep.ties, bound=bound)
     is.hvg[hvg.index] <- TRUE
     rowData(x)[[paste0(prefix, "hvg")]] <- is.hvg
 

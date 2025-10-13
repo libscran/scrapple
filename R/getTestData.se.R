@@ -67,7 +67,7 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg")) {
     }
 
     if (!("hvg" %in% names(cache$rna))) {
-        sce <- chooseRnaHvgs.se(sce, use.min.width=TRUE)
+        sce <- chooseRnaHvgs.se(sce, more.var.args=list(use.min.width=TRUE))
         cache$rna$hvg <- sce
     }
     sce <- cache$rna$hvg
