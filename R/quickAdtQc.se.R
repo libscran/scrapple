@@ -10,21 +10,15 @@
 #' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
-#' @param raw Logical scalar indicating whether to return the QC results directly.
+#' @param compute.res List returned by \code{\link[scrapper]{computeAdtQcMetrics}}.
 #' 
 #' @return
-#' For \code{quickAdtQc.se}:
-#' \itemize{
-#' \item If \code{raw=FALSE}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
+#' For \code{quickAdtQc.se}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
 #' Each column contains per-cell values for one of the QC metrics, see \code{\link[scrapper]{computeAdtQcMetrics}} for details.
 #' The suggested thresholds are stored as a list in \code{\link[S4Vectors]{metadata}}.
 #' The \code{colData} also contains a \code{keep} column, specifying which cells are to be retained.
-#' \item If \code{raw=TRUE}, a list is returned containing \code{metrics}, the result of \code{\link[scrapper]{computeAdtQcMetrics}};
-#' \code{thresholds}, the result of \code{\link[scrapper]{suggestAdtQcThresholds}},
-#' and \code{keep}, the result of \code{\link[scrapper]{FilterAdtQcMetrics}}.
-#' }
 #'
-#' For \code{attachAdtQcMetrics.se}. \code{x} is returned with additional columns added to its \code{colData}.
+#' For \code{formatComputeAdtQcMetricsResult}, a \link[S4Vectors]{DataFrame} is returned with the per-cell QC metrics.
 #'
 #' @author Aaron Lun
 #'
@@ -40,19 +34,10 @@
 #' colData(sce)[,c("sum", "detected", "igg.sum")]
 #' metadata(sce)$thresholds
 #' summary(sce$keep)
-#'
-#' # We can also manually execute many of the steps:
-#' sce <- altExp(getTestAdtData.se(), "ADT")
-#' res <- quickAdtQc.se(sce, subsets=list(igg=grepl("IgG", rownames(sce))), raw=TRUE)
-#' sce <- attachAdtQcMetrics.se(sce, res$metrics, prefix="adt.qc.")
-#' res$thresholds$detected <- 50 # manual override of the sum threshold
-#' res$thresholds$subsets["igg"] <- 10 # same for the IgG sums
-#' sce$adt.qc.keep <- scrapper::filterAdtQcMetrics(res$thresholds, res$metrics)
 #' 
 #' @export
-#' @importFrom SummarizedExperiment assay colData<-
-#' @importFrom SingleCellExperiment altExp
 #' @importFrom S4Vectors metadata metadata<-
+#' @importFrom SummarizedExperiment assay colData colData<-
 quickAdtQc.se <- function( 
     x,
     subsets,
@@ -61,18 +46,13 @@ quickAdtQc.se <- function(
     block = NULL,
     assay.type = "counts",
     prefix = NULL, 
-    flatten = TRUE,
-    raw = FALSE
+    flatten = TRUE
 ) {
     metrics <- scrapper::computeAdtQcMetrics(assay(x, assay.type, withDimnames=FALSE), subsets, num.threads=num.threads)
     thresholds <- scrapper::suggestAdtQcThresholds(metrics, block=block, num.mads=num.mads)
     keep <- scrapper::filterAdtQcMetrics(thresholds, metrics, block=block)
 
-    if (raw) {
-        return(list(metrics=metrics, thresholds=thresholds, keep=keep))
-    }
-
-    x <- attachAdtQcMetrics.se(x, metrics, prefix=prefix, flatten=flatten)
+    colData(x) <- cbind(colData(x), formatComputeAdtQcMetricsResult(metrics, prefix=prefix, flatten=flatten))
     colData(x)[[paste0(prefix, "keep")]] <- keep
     metadata(x)[[paste0(prefix, "thresholds")]] <- thresholds
     x
@@ -80,24 +60,22 @@ quickAdtQc.se <- function(
 
 #' @export
 #' @rdname quickAdtQc.se
-#' @importFrom SummarizedExperiment colData colData<-
-attachAdtQcMetrics.se <- function(x, metrics, prefix = "", flatten = TRUE) {
-    cd <- colData(x)
-    cd[[paste0(prefix, "sum")]] <- metrics$sum
-    cd[[paste0(prefix, "detected")]] <- metrics$detected
+#' @importFrom S4Vectors DataFrame make_zero_col_DFrame
+formatComputeAdtQcMetricsResult <- function(compute.res, prefix = NULL, flatten = TRUE) {
+    df <- DataFrame(sum=compute.res$sum, detected=compute.res$detected)
 
     if (flatten) {
-        for (sub in names(metrics$subsets)) {
-            cd[[paste0(prefix, sub, ".sum")]] <- metrics$subsets[[sub]]
+        for (sub in names(compute.res$subsets)) {
+            df[[paste0(sub, ".sum")]] <- compute.res$subsets[[sub]]
         }
     } else {
         tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(cd))
-        for (sub in names(metrics$subsets)) {
-            tmp[[paste0(sub)]] <- metrics$subsets[[sub]]
+        for (sub in names(compute.res$subsets)) {
+            tmp[[paste0(sub)]] <- compute.res$subsets[[sub]]
         }
-        cd[[paste0(prefix, "sum")]] <- tmp
+        df[["sum"]] <- tmp
     }
 
-    colData(x) <- cd
-    x
+    colnames(df) <- paste0(prefix, colnames(df))
+    df
 }

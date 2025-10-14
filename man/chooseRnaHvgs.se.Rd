@@ -2,6 +2,7 @@
 % Please edit documentation in R/chooseRnaHvgs.se.R
 \name{chooseRnaHvgs.se}
 \alias{chooseRnaHvgs.se}
+\alias{formatModelGeneVariancesResult}
 \title{Choose highly variable genes from residuals}
 \usage{
 chooseRnaHvgs.se(
@@ -12,6 +13,13 @@ chooseRnaHvgs.se(
   top = 4000,
   more.choose.args = list(),
   assay.type = "logcounts",
+  prefix = NULL,
+  include.per.block = FALSE
+)
+
+formatModelGeneVariancesResult(
+  model.res,
+  choose.res = NULL,
   prefix = NULL,
   include.per.block = FALSE
 )
@@ -34,11 +42,19 @@ Rows correspond to genes and columns correspond to cells.}
 
 \item{include.per.block}{Logical scalar indicating whether the per-block statistics should be stored in the output object.
 Only relevant if \code{block} is specified.}
+
+\item{model.res}{List returned by \code{\link[scrapper]{modelGeneVariances}}.}
+
+\item{choose.res}{Integer vector returned by \code{\link[scrapper]{chooseHighlyVariableGenes}}.
+This may be \code{NULL}, in which case the identities of the HVGs will not be stored.}
 }
 \value{
-\code{x} is returned with the per-gene variance modelling statistics added to the \code{rowData}.
+For \code{chooseRnaHvgs.se}, \code{x} is returned with the per-gene variance modelling statistics added to the \code{rowData}.
 The \code{hvg} column indicates whether a gene was chosen as a HVG.
 If \code{include.per.block=TRUE} and \code{block} is specified, the per-block statistics are stored as a nested DataFrame in the \code{per.block} column.
+
+For \code{formatModelGeneVariancesResult}, a \link[S4Vectors]{DataFrame} is returned with the per-gene variance modelling statistics.
+If \code{choose.res} is provided, a \code{hvg} column is also stored that indicates whether a gene was chosen as a HVG.
 }
 \description{
 Model the mean-variance relationship across genes and choose highly variable genes (HVGs) based on the residuals of the fitted trend.

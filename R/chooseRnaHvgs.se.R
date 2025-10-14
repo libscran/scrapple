@@ -12,10 +12,17 @@
 #' @param prefix String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{rowData}}.
 #' @param include.per.block Logical scalar indicating whether the per-block statistics should be stored in the output object.
 #' Only relevant if \code{block} is specified.
+#' @param model.res List returned by \code{\link[scrapper]{modelGeneVariances}}.
+#' @param choose.res Integer vector returned by \code{\link[scrapper]{chooseHighlyVariableGenes}}.
+#' This may be \code{NULL}, in which case the identities of the HVGs will not be stored.
 #'
-#' @return \code{x} is returned with the per-gene variance modelling statistics added to the \code{rowData}.
+#' @return
+#' For \code{chooseRnaHvgs.se}, \code{x} is returned with the per-gene variance modelling statistics added to the \code{rowData}.
 #' The \code{hvg} column indicates whether a gene was chosen as a HVG.
 #' If \code{include.per.block=TRUE} and \code{block} is specified, the per-block statistics are stored as a nested DataFrame in the \code{per.block} column.
+#'
+#' For \code{formatModelGeneVariancesResult}, a \link[S4Vectors]{DataFrame} is returned with the per-gene variance modelling statistics.
+#' If \code{choose.res} is provided, a \code{hvg} column is also stored that indicates whether a gene was chosen as a HVG.
 #'
 #' @examples
 #' sce <- getTestRnaData.se("norm")
@@ -49,17 +56,6 @@ chooseRnaHvgs.se <- function(
         )
     )
 
-    colnames(info$statistics) <- paste0(prefix, colnames(info$statistics))
-    rowData(x) <- cbind(rowData(x), info$statistics)
-
-    if (include.per.block && !is.null(info$per.block)) {
-        tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(x))
-        for (n in names(info$per.block)) {
-            tmp[[sub]] <- DataFrame(info$per.block[[n]])
-        }
-        rowData(x)[[paste0(prefix, "per.block")]] <- tmp
-    }
-
     hvg.index <- do.call(
         scrapper::chooseHighlyVariableGenes,
         c(
@@ -71,9 +67,30 @@ chooseRnaHvgs.se <- function(
         )
     )
 
-    is.hvg <- logical(nrow(x))
-    is.hvg[hvg.index] <- TRUE
-    rowData(x)[[paste0(prefix, "hvg")]] <- is.hvg
-
+    df <- formatModelGeneVariancesResult(info, choose.res=hvg.index, prefix=prefix, include.per.block=include.per.block)
+    rowData(x) <- cbind(rowData(x), df)
     x
+}
+
+#' @export
+#' @rdname chooseRnaHvgs.se
+formatModelGeneVariancesResult <- function(model.res, choose.res = NULL, prefix = NULL, include.per.block = FALSE) {
+    df <- DataFrame(model.res$statistics)
+    colnames(df) <- paste0(prefix, colnames(df))
+
+    if (include.per.block && !is.null(model.res$per.block)) {
+        tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(df))
+        for (n in names(model.res$per.block)) {
+            tmp[[sub]] <- DataFrame(model.res$per.block[[n]])
+        }
+        df[[paste0(prefix, "per.block")]] <- tmp
+    }
+
+    if (!is.null(choose.res)) {
+        is.hvg <- logical(nrow(x))
+        is.hvg[choose.res] <- TRUE
+        df[[paste0(prefix, "hvg")]] <- is.hvg
+    }
+
+    df
 }

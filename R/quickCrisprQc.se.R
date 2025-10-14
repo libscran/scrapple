@@ -10,21 +10,15 @@
 #' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
-#' @param raw Logical scalar indicating whether to return the QC results directly.
+#' @param compute.res List returned by \code{\link[scrapper]{computeCrisprQcMetrics}}.
 #' 
 #' @return
-#' For \code{quickCrisprQc.se}:
-#' \itemize{
-#' \item If \code{raw=FALSE}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
+#' For \code{quickCrisprQc.se}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
 #' Each column contains per-cell values for one of the QC metrics, see \code{\link[scrapper]{computeCrisprQcMetrics}} for details.
 #' The suggested thresholds are stored as a list in \code{\link[S4Vectors]{metadata}}.
 #' The \code{colData} also contains a \code{keep} column, specifying which cells are to be retained.
-#' \item If \code{raw=TRUE}, a list is returned containing \code{metrics}, the result of \code{\link[scrapper]{computeCrisprQcMetrics}};
-#' \code{thresholds}, the result of \code{\link[scrapper]{suggestCrisprQcThresholds}},
-#' and \code{keep}, the result of \code{\link[scrapper]{FilterCrisprQcMetrics}}.
-#' }
 #'
-#' For \code{attachCrisprQcMetrics.se}. \code{x} is returned with additional columns added to its \code{colData}.
+#' For \code{formatComputeCrisprQcMetricsResult}, a \link[S4Vectors]{DataFrame} is returned with the per-cell QC metrics.
 #'
 #' @author Aaron Lun
 #'
@@ -40,17 +34,9 @@
 #' colData(sce)[,c("sum", "detected", "max.value", "max.index")]
 #' metadata(sce)$thresholds
 #' summary(sce$keep)
-#'
-#' # We can also manually execute many of the steps:
-#' sce <- altExp(getTestCrisprData.se(), "CRISPR Guide Capture")
-#' res <- quickCrisprQc.se(sce, raw=TRUE)
-#' sce <- attachCrisprQcMetrics.se(sce, res$metrics, prefix="crispr.qc.")
-#' res$thresholds$max.value <- 50 # manual override of the max value threshold
-#' sce$crispr.qc.keep <- scrapper::filterCrisprQcMetrics(res$thresholds, res$metrics)
 #' 
 #' @export
-#' @importFrom SummarizedExperiment assay colData<-
-#' @importFrom SingleCellExperiment altExp
+#' @importFrom SummarizedExperiment assay colData colData<-
 #' @importFrom S4Vectors metadata metadata<-
 quickCrisprQc.se <- function( 
     x,
@@ -59,18 +45,13 @@ quickCrisprQc.se <- function(
     block = NULL,
     assay.type = "counts",
     prefix = NULL, 
-    flatten = TRUE,
-    raw = FALSE
+    flatten = TRUE
 ) {
     metrics <- scrapper::computeCrisprQcMetrics(assay(x, assay.type, withDimnames=FALSE), num.threads=num.threads)
     thresholds <- scrapper::suggestCrisprQcThresholds(metrics, block=block, num.mads=num.mads)
     keep <- scrapper::filterCrisprQcMetrics(thresholds, metrics, block=block)
 
-    if (raw) {
-        return(list(metrics=metrics, thresholds=thresholds, keep=keep))
-    }
-
-    x <- attachCrisprQcMetrics.se(x, metrics, prefix=prefix, flatten=flatten)
+    colData(x) <- cbind(colData(x), formatComputeCrisprQcMetricsResult(metrics, prefix=prefix, flatten=flatten))
     colData(x)[[paste0(prefix, "keep")]] <- keep
     metadata(x)[[paste0(prefix, "thresholds")]] <- thresholds
     x
@@ -78,13 +59,9 @@ quickCrisprQc.se <- function(
 
 #' @export
 #' @rdname quickCrisprQc.se
-#' @importFrom SummarizedExperiment colData colData<-
-attachCrisprQcMetrics.se <- function(x, metrics, prefix = "", flatten = TRUE) {
-    cd <- colData(x)
-    cd[[paste0(prefix, "sum")]] <- metrics$sum
-    cd[[paste0(prefix, "detected")]] <- metrics$detected
-    cd[[paste0(prefix, "max.value")]] <- metrics$max.value
-    cd[[paste0(prefix, "max.index")]] <- metrics$max.index
-    colData(x) <- cd
-    x
+#' @importFrom S4Vectors DataFrame
+formatComputeCrisprQcMetricsResult <- function(compute.res, prefix = NULL, flatten = TRUE) {
+    df <- DataFrame(compute.res)
+    colnames(df) <- paste0(prefix, colnames(df))
+    df
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/quickRnaQc.se.R
 \name{quickRnaQc.se}
 \alias{quickRnaQc.se}
-\alias{attachRnaQcMetrics.se}
+\alias{formatComputeRnaQcMetricsResult}
 \title{Quick quality control for RNA data}
 \usage{
 quickRnaQc.se(
@@ -14,11 +14,10 @@ quickRnaQc.se(
   altexp.proportions = NULL,
   assay.type = "counts",
   prefix = NULL,
-  flatten = TRUE,
-  raw = FALSE
+  flatten = TRUE
 )
 
-attachRnaQcMetrics.se(x, metrics, prefix = "", flatten = TRUE)
+formatComputeRnaQcMetricsResult(compute.res, prefix = NULL, flatten = TRUE)
 }
 \arguments{
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
@@ -38,25 +37,24 @@ These proportions will be used for filtering in the same manner as the proportio
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
 
-\item{raw}{Logical scalar indicating whether to return the QC results directly.}
+\item{compute.res}{List returned by \code{\link[scrapper]{computeRnaQcMetrics}}.}
 }
 \value{
-For \code{quickRnaQc.se}:
-\itemize{
-\item If \code{raw=FALSE}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
+For \code{quickRnaQc.se}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
 Each column contains per-cell values for one of the QC metrics, see \code{\link[scrapper]{computeRnaQcMetrics}} for details.
 The suggested thresholds are stored as a list in \code{\link[S4Vectors]{metadata}}.
 The \code{colData} also contains a \code{keep} column, specifying which cells are to be retained.
-\item If \code{raw=TRUE}, a list is returned containing \code{metrics}, the result of \code{\link[scrapper]{computeRnaQcMetrics}};
-\code{thresholds}, the result of \code{\link[scrapper]{suggestRnaQcThresholds}},
-and \code{keep}, the result of \code{\link[scrapper]{FilterRnaQcMetrics}}.
+If \code{altexp.proportions} is provided, QC metrics are added to the \code{colData} of the specified alternative experiments in the output object.
+
+For \code{computeRnaQcMetricsWithAltExps}, a list is returned containing:
+\itemize{
+\item \code{main}, the result of calling \code{\link[scrapper]{computeRnaQcMetrics}} on the RNA count matrix in \code{x}.
+The proportion of counts in each alternative experiment is added to the \code{subsets}.
+\item \code{altexp}, a named list of length equal to \code{altexp.proportions}.
+Each inner list is the result of calling \code{computeRnaQcMetrics} on the RNA count matrix of the corresponding alternative experiment of \code{x}.
 }
 
-If \code{altexp.proportions} is provided and \code{raw=FALSE},
-QC metrics are added to the \code{colData} of the specified alternative experiments in the output object.
-If \code{raw=TRUE}, an additional \code{altexp} element will be present in the list, containing the QC metrics from each alternative experiment.
-
-For \code{attachRnaQcMetrics.se}. \code{x} is returned with additional columns added to its \code{colData}.
+For \code{formatComputeRnaQcMetricsResult}, a \link[S4Vectors]{DataFrame} is returned containing the per-cell QC metrics.
 }
 \description{
 Quickly compute quality control (QC) metrics, thresholds and filters from RNA data in a \link[SummarizedExperiment]{SummarizedExperiment}.
@@ -83,14 +81,6 @@ sce <- quickRnaQc.se(
 )
 colData(sce)[,c("sum", "detected", "mito.proportion", "ERCC.proportion")]
 colData(altExp(sce, "ERCC"))[,c("sum", "detected")]
-
-# We can also manually execute many of the steps:
-sce <- getTestRnaData.se()
-res <- quickRnaQc.se(sce, subsets=list(mito=grepl("^mt", rownames(sce))), raw=TRUE)
-sce <- attachRnaQcMetrics.se(sce, res$metrics, prefix="rna.qc.")
-res$thresholds$sum <- 1000 # manual override of the sum threshold
-res$thresholds$subsets["mito"] <- 0.05 # same for the mitochondrial proportions
-sce$rna.qc.keep <- scrapper::filterRnaQcMetrics(res$thresholds, res$metrics)
 
 }
 \seealso{
