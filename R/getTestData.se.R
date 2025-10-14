@@ -36,7 +36,7 @@ cache$crispr <- list()
 #' 
 #' @export
 #' @name getTestData.se
-getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg")) {
+getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$rna))) {
@@ -72,6 +72,15 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg")) {
     }
     sce <- cache$rna$hvg
     if (at == "hvg") {
+        return(sce)
+    }
+
+    if (!("pca" %in% names(cache$rna))) {
+        sce <- runPca.se(sce, features=rowData(sce)$hvg)
+        cache$rna$pca <- sce
+    }
+    sce <- cache$rna$pca
+    if (at == "pca") {
         return(sce)
     }
 }
