@@ -17,6 +17,9 @@
 #' # Using fewer iterations for a faster-running example.
 #' sce <- runTsne.se(sce, more.tsne.args=list(max.iterations=50))
 #' head(reducedDim(sce, "TSNE"))
+#'
+#' @seealso
+#' \code{\link[scrapper]{runTsne}} from the \pkg{scrapper} package.
 #'  
 #' @export
 #' @importFrom SingleCellExperiment reducedDim reducedDim<-

@@ -38,7 +38,10 @@ sce <- getTestRnaData.se("pca")
 # Using fewer epochs for a faster-running example.
 sce <- runUmap.se(sce, more.umap.args=list(num.epochs=50))
 head(reducedDim(sce, "UMAP"))
- 
+
+}
+\seealso{
+\code{\link[scrapper]{runUmap}} from the \pkg{scrapper} package.
 }
 \author{
 Aaron Lun
