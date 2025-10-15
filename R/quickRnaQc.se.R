@@ -9,7 +9,9 @@
 #' @param altexp.proportions Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
 #' These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.
 #' @param assay.type Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.
-#' @param prefix String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{colData}}.
+#' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
+#' @param thresholds.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
+#' If \code{NULL}, thresholds are not stored in the metadata.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
 #' @param compute.res List returned by \code{\link[scrapper]{computeRnaQcMetrics}}.
@@ -74,32 +76,34 @@ quickRnaQc.se <- function(
     block = NULL,
     altexp.proportions = NULL,
     assay.type = "counts",
-    prefix = NULL, 
+    output.prefix = NULL, 
+    thresholds.name = "thresholds",
     flatten = TRUE
 ) {
     metrics <- computeRnaQcMetricsWithAltExps(x, subsets, altexp.proportions=altexp.proportions, num.threads=num.threads)
     thresholds <- scrapper::suggestRnaQcThresholds(metrics$main, block=block, num.mads=num.mads)
     keep <- scrapper::filterRnaQcMetrics(thresholds, metrics$main, block=block)
 
-    colData(x) <- cbind(
-        colData(x),
-        formatComputeRnaQcMetricsResult(metrics$main, prefix=prefix, flatten=flatten)
-    )
+    df <- formatComputeRnaQcMetricsResult(metrics$main, flatten=flatten)
+    df$keep <- keep
+    colnames(df) <- paste0(output.prefix, colnames(df))
+    colData(x) <- cbind(colData(x), df)
 
     if (!is.null(altexp.proportions)) {
         altexp.names <- .choose_altexp_names(altexp.proportions)
         for (i in seq_along(altexp.proportions)) {
             ap <- altexp.proportions[i]
             ae.name <- altexp.names[i]
-            colData(altExp(x, ap)) <- cbind(
-                colData(altExp(x, ap)),
-                formatComputeRnaQcMetricsResult(metrics$altexp[[ae.name]], prefix=prefix, flatten=flatten)
-            )
+            ae.df <- formatComputeRnaQcMetricsResult(metrics$altexp[[ae.name]], flatten=flatten)
+            colnames(ae.df) <- paste0(output.prefix, colnames(ae.df))
+            colData(altExp(x, ap)) <- cbind(colData(altExp(x, ap)), ae.df)
         }
     }
 
-    colData(x)[[paste0(prefix, "keep")]] <- keep
-    metadata(x)[[paste0(prefix, "thresholds")]] <- thresholds
+    if (!is.null(thresholds.name)) {
+        metadata(x)[[thresholds.name]] <- thresholds
+    }
+
     x
 }
 
@@ -128,7 +132,7 @@ computeRnaQcMetricsWithAltExps <- function(x, subsets, altexp.proportions, num.t
 #' @export
 #' @rdname quickRnaQc.se
 #' @importFrom S4Vectors DataFrame make_zero_col_DFrame
-formatComputeRnaQcMetricsResult <- function(compute.res, prefix = NULL, flatten = TRUE) {
+formatComputeRnaQcMetricsResult <- function(compute.res, flatten = TRUE) {
     df <- DataFrame(sum=compute.res$sum, detected=compute.res$detected)
 
     if (flatten) {
@@ -143,7 +147,6 @@ formatComputeRnaQcMetricsResult <- function(compute.res, prefix = NULL, flatten 
         df[["proportion"]] <- tmp
     }
 
-    colnames(df) <- paste0(prefix, colnames(df))
     df
 }
 

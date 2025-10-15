@@ -13,11 +13,12 @@ quickRnaQc.se(
   block = NULL,
   altexp.proportions = NULL,
   assay.type = "counts",
-  prefix = NULL,
+  output.prefix = NULL,
+  thresholds.name = "thresholds",
   flatten = TRUE
 )
 
-formatComputeRnaQcMetricsResult(compute.res, prefix = NULL, flatten = TRUE)
+formatComputeRnaQcMetricsResult(compute.res, flatten = TRUE)
 }
 \arguments{
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
@@ -32,7 +33,10 @@ These proportions will be used for filtering in the same manner as the proportio
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.}
 
-\item{prefix}{String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{colData}}.}
+\item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
+
+\item{thresholds.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
+If \code{NULL}, thresholds are not stored in the metadata.}
 
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}

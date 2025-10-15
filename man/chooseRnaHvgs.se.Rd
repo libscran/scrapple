@@ -13,14 +13,13 @@ chooseRnaHvgs.se(
   top = 4000,
   more.choose.args = list(),
   assay.type = "logcounts",
-  prefix = NULL,
+  output.prefix = NULL,
   include.per.block = FALSE
 )
 
 formatModelGeneVariancesResult(
   model.res,
   choose.res = NULL,
-  prefix = NULL,
   include.per.block = FALSE
 )
 }
@@ -38,9 +37,9 @@ Rows correspond to genes and columns correspond to cells.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the log-normalized expression matrix for the RNA data.}
 
-\item{prefix}{String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{rowData}}.}
+\item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{rowData}} columns containing the output statistics.}
 
-\item{include.per.block}{Logical scalar indicating whether the per-block statistics should be stored in the output object.
+\item{include.per.block}{Logical scalar indicating whether the per-block statistics should be stored in the output \code{rowData}.
 Only relevant if \code{block} is specified.}
 
 \item{model.res}{List returned by \code{\link[scrapper]{modelGeneVariances}}.}

@@ -12,11 +12,12 @@ quickAdtQc.se(
   num.mads = 3,
   block = NULL,
   assay.type = "counts",
-  prefix = NULL,
+  output.prefix = NULL,
+  thresholds.name = "thresholds",
   flatten = TRUE
 )
 
-formatComputeAdtQcMetricsResult(compute.res, prefix = NULL, flatten = TRUE)
+formatComputeAdtQcMetricsResult(compute.res, flatten = TRUE)
 }
 \arguments{
 \item{x}{A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
@@ -28,7 +29,10 @@ Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the ADT count matrix.}
 
-\item{prefix}{String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.}
+\item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
+
+\item{thresholds.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
+If \code{NULL}, thresholds are not stored in the metadata.}
 
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}

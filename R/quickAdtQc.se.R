@@ -7,7 +7,9 @@
 #' @param subsets,num.threads Arguments passed to \code{\link[scrapper]{computeAdtQcMetrics}}.
 #' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestAdtQcThresholds}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the ADT count matrix.
-#' @param prefix String containing a prefix to append to the name of each column corresponding to a QC metric in the \code{link[SummarizedExperiment]{colData}}.
+#' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
+#' @param thresholds.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
+#' If \code{NULL}, thresholds are not stored in the metadata.
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
 #' @param compute.res List returned by \code{\link[scrapper]{computeAdtQcMetrics}}.
@@ -45,23 +47,30 @@ quickAdtQc.se <- function(
     num.mads = 3,
     block = NULL,
     assay.type = "counts",
-    prefix = NULL, 
+    output.prefix = NULL, 
+    thresholds.name = "thresholds",
     flatten = TRUE
 ) {
     metrics <- scrapper::computeAdtQcMetrics(assay(x, assay.type, withDimnames=FALSE), subsets, num.threads=num.threads)
     thresholds <- scrapper::suggestAdtQcThresholds(metrics, block=block, num.mads=num.mads)
     keep <- scrapper::filterAdtQcMetrics(thresholds, metrics, block=block)
 
-    colData(x) <- cbind(colData(x), formatComputeAdtQcMetricsResult(metrics, prefix=prefix, flatten=flatten))
-    colData(x)[[paste0(prefix, "keep")]] <- keep
-    metadata(x)[[paste0(prefix, "thresholds")]] <- thresholds
+    df <- formatComputeAdtQcMetricsResult(metrics, flatten=flatten)
+    df$keep <- keep
+    colnames(df) <- paste0(output.prefix, colnames(df))
+    colData(x) <- cbind(colData(x), df)
+
+    if (!is.null(thresholds.name)) {
+        metadata(x)[[thresholds.name]] <- thresholds
+    }
+
     x
 }
 
 #' @export
 #' @rdname quickAdtQc.se
 #' @importFrom S4Vectors DataFrame make_zero_col_DFrame
-formatComputeAdtQcMetricsResult <- function(compute.res, prefix = NULL, flatten = TRUE) {
+formatComputeAdtQcMetricsResult <- function(compute.res, flatten = TRUE) {
     df <- DataFrame(sum=compute.res$sum, detected=compute.res$detected)
 
     if (flatten) {
@@ -71,11 +80,10 @@ formatComputeAdtQcMetricsResult <- function(compute.res, prefix = NULL, flatten 
     } else {
         tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(cd))
         for (sub in names(compute.res$subsets)) {
-            tmp[[paste0(sub)]] <- compute.res$subsets[[sub]]
+            tmp[[sub]] <- compute.res$subsets[[sub]]
         }
         df[["sum"]] <- tmp
     }
 
-    colnames(df) <- paste0(prefix, colnames(df))
     df
 }

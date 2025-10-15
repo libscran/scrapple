@@ -9,8 +9,8 @@
 #' @param top Arguments passed to \code{\link[scrapper]{chooseHighlyVariableGenes}}.
 #' @param more.choose.args Named list of arguments to pass to \code{\link[scrapper]{chooseHighlyVariableGenes}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the log-normalized expression matrix for the RNA data.
-#' @param prefix String containing a prefix to add to the column names in the output \code{link[SummarizedExperiment]{rowData}}.
-#' @param include.per.block Logical scalar indicating whether the per-block statistics should be stored in the output object.
+#' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{rowData}} columns containing the output statistics.
+#' @param include.per.block Logical scalar indicating whether the per-block statistics should be stored in the output \code{rowData}.
 #' Only relevant if \code{block} is specified.
 #' @param model.res List returned by \code{\link[scrapper]{modelGeneVariances}}.
 #' @param choose.res Integer vector returned by \code{\link[scrapper]{chooseHighlyVariableGenes}}.
@@ -42,7 +42,7 @@ chooseRnaHvgs.se <- function(
     top = 4000,
     more.choose.args = list(),
     assay.type = "logcounts",
-    prefix = NULL,
+    output.prefix = NULL,
     include.per.block = FALSE
 ) {
     info <- do.call(
@@ -67,29 +67,29 @@ chooseRnaHvgs.se <- function(
         )
     )
 
-    df <- formatModelGeneVariancesResult(info, choose.res=hvg.index, prefix=prefix, include.per.block=include.per.block)
+    df <- formatModelGeneVariancesResult(info, choose.res=hvg.index, include.per.block=include.per.block)
+    colnames(df) <- paste0(output.prefix, colnames(df))
     rowData(x) <- cbind(rowData(x), df)
     x
 }
 
 #' @export
 #' @rdname chooseRnaHvgs.se
-formatModelGeneVariancesResult <- function(model.res, choose.res = NULL, prefix = NULL, include.per.block = FALSE) {
+formatModelGeneVariancesResult <- function(model.res, choose.res = NULL, include.per.block = FALSE) {
     df <- DataFrame(model.res$statistics)
-    colnames(df) <- paste0(prefix, colnames(df))
 
     if (include.per.block && !is.null(model.res$per.block)) {
         tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(df))
         for (n in names(model.res$per.block)) {
             tmp[[sub]] <- DataFrame(model.res$per.block[[n]])
         }
-        df[[paste0(prefix, "per.block")]] <- tmp
+        df[["per.block"]] <- tmp
     }
 
     if (!is.null(choose.res)) {
-        is.hvg <- logical(nrow(x))
+        is.hvg <- logical(nrow(df))
         is.hvg[choose.res] <- TRUE
-        df[[paste0(prefix, "hvg")]] <- is.hvg
+        df[["hvg"]] <- is.hvg
     }
 
     df

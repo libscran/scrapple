@@ -12,8 +12,8 @@ runPca.se(
   num.threads = 1,
   more.pca.args = list(),
   assay.type = "logcounts",
-  prefix = NULL,
-  output.name = "PCA"
+  output.name = "PCA",
+  meta.name = "PCA"
 )
 }
 \arguments{
@@ -31,13 +31,13 @@ If \code{NULL}, all available features are used.}
 \item{assay.type}{Integer or string specifying the assay of \code{x} to be used for PCA.
 This is typically the log-normalized expression matrix created by \code{\link{normalizeRnaCounts.se}}.}
 
-\item{prefix}{String containing a prefix to add to the names in the output \code{link[SummarizedExperiment]{metadata}}.}
+\item{output.name}{String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the PC scores.}
 
-\item{output.name}{String containing the name of the components in the output \code{\link[SingleCellExperiment]{reducedDim}}.}
+\item{meta.name}{String containing the name of the \code{link[SummarizedExperiment]{metadata}} entry in which to store other PCA statistics.}
 }
 \value{
 \code{x} is returned with the principal component scores in the \code{reducedDim}.
-Additional information (rotation matrix, variance explained) is stored in the \code{\link[SummarizedExperiment]{metadata}}.
+Additional outputs (e.g., rotation matrix, variance explained) are stored in the \code{\link[SummarizedExperiment]{metadata}}.
 }
 \description{
 Compact and denoise the dataset by performing PCA on the (log-)normalized expression matrix.
@@ -46,7 +46,7 @@ Compact and denoise the dataset by performing PCA on the (log-)normalized expres
 sce <- getTestRnaData.se("hvg")
 sce <- runPca.se(sce, rowData(sce)$hvg)
 dim(reducedDim(sce, "PCA"))
-plot(metadata(sce)$variance.explained / metadata(sce)$total.variance)
+plot(metadata(sce)$PCA$variance.explained / metadata(sce)$PCA$total.variance)
 
 }
 \seealso{

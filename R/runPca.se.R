@@ -11,18 +11,18 @@
 #' @param more.pca.args Named list of additional arguments to pass to \code{\link[scrapper]{runPca}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} to be used for PCA.
 #' This is typically the log-normalized expression matrix created by \code{\link{normalizeRnaCounts.se}}.
-#' @param prefix String containing a prefix to add to the names in the output \code{link[SummarizedExperiment]{metadata}}.
-#' @param output.name String containing the name of the components in the output \code{\link[SingleCellExperiment]{reducedDim}}.
+#' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the PC scores.
+#' @param meta.name String containing the name of the \code{link[SummarizedExperiment]{metadata}} entry in which to store other PCA statistics.
 #'
 #' @return \code{x} is returned with the principal component scores in the \code{reducedDim}.
-#' Additional information (rotation matrix, variance explained) is stored in the \code{\link[SummarizedExperiment]{metadata}}.
+#' Additional outputs (e.g., rotation matrix, variance explained) are stored in the \code{\link[SummarizedExperiment]{metadata}}.
 #'
 #' @author Aaron Lun
 #' @examples
 #' sce <- getTestRnaData.se("hvg")
 #' sce <- runPca.se(sce, rowData(sce)$hvg)
 #' dim(reducedDim(sce, "PCA"))
-#' plot(metadata(sce)$variance.explained / metadata(sce)$total.variance)
+#' plot(metadata(sce)$PCA$variance.explained / metadata(sce)$PCA$total.variance)
 #'
 #' @seealso
 #' \code{\link[scrapper]{runPca}} from the \pkg{scrapper} package.
@@ -40,8 +40,8 @@ runPca.se <- function(
     num.threads = 1,
     more.pca.args = list(),
     assay.type = "logcounts",
-    prefix = NULL,
-    output.name = "PCA"
+    output.name = "PCA",
+    meta.name = "PCA"
 ) {
     y <- assay(x, assay.type)
     if (!is.null(features)) {
@@ -60,8 +60,9 @@ runPca.se <- function(
     )
 
     reducedDim(x, output.name) <- t(out$components)
-    for (extras in setdiff(names(out), "components")) {
-        metadata(x)[[paste0(prefix, extras)]] <- out[[extras]]
+    if (!is.null(meta.name)) {
+        out$components <- NULL
+        metadata(x)[[meta.name]] <- out
     }
 
     x
