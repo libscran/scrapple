@@ -36,7 +36,7 @@ cache$crispr <- list()
 #' 
 #' @export
 #' @name getTestData.se
-getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
+getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca", "cluster")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$rna))) {
@@ -81,6 +81,15 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
     }
     sce <- cache$rna$pca
     if (at == "pca") {
+        return(sce)
+    }
+
+    if (!("cluster" %in% names(cache$rna))) {
+        sce <- clusterGraph.se(sce)
+        cache$rna$cluster <- sce
+    }
+    sce <- cache$rna$cluster
+    if (at == "cluster") {
         return(sce)
     }
 }

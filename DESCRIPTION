@@ -14,6 +14,7 @@ Depends:
     SummarizedExperiment,
     SingleCellExperiment
 Imports:
+    utils,
     Matrix,
     BiocGenerics,
     scrapper
