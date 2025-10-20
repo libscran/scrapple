@@ -33,7 +33,8 @@ Compute a gene set activity score for each cell based on the expression values o
 \examples{
 # Defining a gene set of oligodendrocyte genes.
 library(org.Mm.eg.db)
-oligo.set <- unique(select(org.Mm.eg.db, keytype="GO", keys="GO:0048709", columns="SYMBOL")$SYMBOL)
+oligo.set <- select(org.Mm.eg.db, keytype="GO", keys="GO:0048709", columns="SYMBOL")
+oligo.set <- unique(oligo.set$SYMBOL)
 
 sce <- getTestRnaData.se("norm")
 oligo.scores <- scoreGeneSet.se(sce, oligo.set)

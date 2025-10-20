@@ -15,8 +15,10 @@ Depends:
     SingleCellExperiment
 Imports:
     utils,
+    methods,
     Matrix,
     BiocGenerics,
+    IRanges,
     scrapper
 Suggests:
     testthat,
