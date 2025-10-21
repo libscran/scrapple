@@ -9,7 +9,7 @@
 \usage{
 getTestRnaData.se(at = c("start", "qc", "norm", "hvg", "pca", "cluster"))
 
-getTestAdtData.se(at = c("start", "qc"))
+getTestAdtData.se(at = c("start", "qc", "norm", "hvg", "pca"))
 
 getTestCrisprData.se(at = "start")
 }

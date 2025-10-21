@@ -96,25 +96,57 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca", "clust
 
 #' @export
 #' @rdname getTestData.se
-getTestAdtData.se <- function(at = c("start", "qc")) {
+getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$adt))) {
-        cache$adt$start <- scRNAseq::fetchDataset("kotliarov-pbmc-2020", "2024-04-18", realize.assays=TRUE)
+        raw.sce <- scRNAseq::fetchDataset("kotliarov-pbmc-2020", "2024-04-18")
+        raw.sce <- raw.sce[,1:5000] # Cutting it down a bit for speed.
+        assay(raw.sce) <- as(assay(raw.sce), "dgCMatrix")
+        cache$adt$start <- raw.sce
     }
     sce <- cache$adt$start
     if (at == "start") {
         return(sce)
     }
 
-    if (!("qc" %in% names(cache$rna))) {
+    if (!("qc" %in% names(cache$adt))) {
         sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "MT-")))
         altExp(sce, "ADT") <- quickAdtQc.se(altExp(sce, "ADT"), subsets=list(igg=rowData(altExp(sce, "ADT"))$isotype))
         sce <- sce[,sce$keep & altExp(sce, "ADT")$keep]
-        cache$rna$qc <- sce
+        cache$adt$qc <- sce
     }
-    sce <- cache$rna$qc
+    sce <- cache$adt$qc
     if (at == "qc") {
+        return(sce)
+    }
+
+    if (!("norm" %in% names(cache$adt))) {
+        sce <- normalizeRnaCounts.se(sce)
+        altExp(sce, "ADT") <- normalizeAdtCounts.se(altExp(sce, "ADT"))
+        cache$adt$norm <- sce
+    }
+    sce <- cache$adt$norm
+    if (at == "norm") {
+        return(sce)
+    }
+
+    if (!("hvg" %in% names(cache$adt))) {
+        sce <- chooseRnaHvgs.se(sce)
+        cache$adt$hvgs <- sce
+    }
+    sce <- cache$adt$hvgs
+    if (at == "hvgs") {
+        return(sce)
+    }
+
+    if (!("pca" %in% names(cache$adt))) {
+        sce <- runPca.se(sce, features=rowData(sce)$hvg)
+        altExp(sce, "ADT") <- runPca.se(altExp(sce, "ADT"), features=NULL)
+        cache$adt$pca <- sce
+    }
+    sce <- cache$adt$pca
+    if (at == "pca") {
         return(sce)
     }
 }
