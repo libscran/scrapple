@@ -6,9 +6,14 @@
 #' Rows correspond to genes and columns correspond to cells.
 #' @param subsets,num.threads Arguments passed to \code{\link[scrapper]{computeRnaQcMetrics}}.
 #' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestRnaQcThresholds}}.
-#' @param altexp.proportions Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
-#' These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.
-#' @param assay.type Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.
+#' @param altexp.proportions Unnamed integer or character vector containing the indices/names of alternative experiments for which to compute QC metrics, see Details.
+#' The assay to use from each alternative experiment is determined by \code{assay.type}.
+#'
+#' Alternatively, a named integer or character vector.
+#' Each name specifies an alternative experiment while each value is the index/name of the assay to use from that experiment.
+#' 
+#' Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}.
+#' @param assay.type Integer or string specifying the assay of \code{x} containing the RNA count matrix.
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
 #' @param thresholds.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
 #' If \code{NULL}, thresholds are not stored in the metadata.
@@ -19,8 +24,7 @@
 #' @details
 #' \code{altexp.proportions} is typically used to refer to alternative experiments holding spike-in data.
 #' For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
-#' The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
-#' If the vector itself is named, those names are used in the column names of the output proportions, rather than the names of the alternative experiments.
+#' These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.
 #'
 #' @return
 #' For \code{quickRnaQc.se}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
@@ -67,7 +71,7 @@
 #' @export
 #' @importFrom S4Vectors metadata metadata<-
 #' @importFrom SummarizedExperiment colData colData<-
-#' @importFrom SingleCellExperiment altExp altExp<-
+#' @importFrom SingleCellExperiment altExp altExp<- altExpNames
 quickRnaQc.se <- function( 
     x,
     subsets,
@@ -90,13 +94,10 @@ quickRnaQc.se <- function(
     colData(x) <- cbind(colData(x), df)
 
     if (!is.null(altexp.proportions)) {
-        altexp.names <- .choose_altexp_names(altexp.proportions)
-        for (i in seq_along(altexp.proportions)) {
-            ap <- altexp.proportions[i]
-            ae.name <- altexp.names[i]
+        for (ae.name in names(metrics$altexp)) {
             ae.df <- formatComputeRnaQcMetricsResult(metrics$altexp[[ae.name]], flatten=flatten)
             colnames(ae.df) <- paste0(output.prefix, colnames(ae.df))
-            colData(altExp(x, ap)) <- cbind(colData(altExp(x, ap)), ae.df)
+            colData(altExp(x, ae.name)) <- cbind(colData(altExp(x, ae.name)), ae.df)
         }
     }
 
@@ -116,11 +117,10 @@ computeRnaQcMetricsWithAltExps <- function(x, subsets, altexp.proportions, num.t
     # Adding more proportions from the alternative experiments, mostly for spike-ins.
     altexp.collected <- list()
     if (!is.null(altexp.proportions)) {
-        altexp.names <- .choose_altexp_names(altexp.proportions)
-        for (i in seq_along(altexp.proportions)) {
-            alt.assay <- assay(altExp(x, altexp.proportions[i]), withDimnames=FALSE)
+        altexp.proportions <- .sanitize_altexp_assays(altexp.proportions, all.altexps=altExpNames(x), default.assay.type=assay.type)
+        for (ae.name in names(altexp.proportions)) {
+            alt.assay <- assay(altExp(x, ae.name), altexp.proportions[[ae.name]])
             alt.metrics <- scrapper::computeRnaQcMetrics(alt.assay, subsets=list(), num.threads=num.threads)
-            ae.name <- altexp.names[i]
             altexp.collected[[ae.name]] <- alt.metrics
             metrics$subsets[[ae.name]] <- alt.metrics$sum/(metrics$sum + alt.metrics$sum)
         }

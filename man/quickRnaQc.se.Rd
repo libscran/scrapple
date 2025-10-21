@@ -28,10 +28,15 @@ Rows correspond to genes and columns correspond to cells.}
 
 \item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestRnaQcThresholds}}.}
 
-\item{altexp.proportions}{Character vector containing the names of alternative experiments for which to compute proportions relative to the RNA total.
-These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.}
+\item{altexp.proportions}{Unnamed integer or character vector containing the indices/names of alternative experiments for which to compute QC metrics, see Details.
+The assay to use from each alternative experiment is determined by \code{assay.type}.
 
-\item{assay.type}{Integer or string specifying the assay of \code{x} (and its alternative experiments) containing the RNA count matrix.}
+Alternatively, a named integer or character vector.
+Each name specifies an alternative experiment while each value is the index/name of the assay to use from that experiment.
+
+Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}.}
+
+\item{assay.type}{Integer or string specifying the assay of \code{x} containing the RNA count matrix.}
 
 \item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
 
@@ -66,8 +71,7 @@ Quickly compute quality control (QC) metrics, thresholds and filters from RNA da
 \details{
 \code{altexp.proportions} is typically used to refer to alternative experiments holding spike-in data.
 For each alternative experiment, the proportion is defined \deqn{X/(X+Y)} where \deqn{X} is the alternative experiment's total and \deqn{Y} is the RNA total.
-The count matrix in each alternative experiment should be stored in the assay specified by \code{assay.type}.
-If the vector itself is named, those names are used in the column names of the output proportions, rather than the names of the alternative experiments.
+These proportions will be used for filtering in the same manner as the proportions computed from \code{subsets}.
 }
 \examples{
 sce <- getTestRnaData.se()

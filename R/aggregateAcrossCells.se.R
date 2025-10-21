@@ -15,8 +15,12 @@
 #' @param include.coldata Logical scalar indicating whether to add the aggregated \code{colData} from \code{x} to the output.
 #' @param more.coldata.args Named list of additional arguments to pass to \code{aggregateColData}.
 #' Only relevant if \code{include.coldata=TRUE}.
-#' @param altexps Integer or character vector of alternative experiments of \code{x} to aggregate.
+#' @param altexps Unnamed integer or character vector specifyig the indices/names of alternative experiments of \code{x} to aggregate.
 #' The aggregated assay from each alternative experiment is determined by \code{assay.type}.
+#'
+#' Alternatively, this may be a named integer or character vector.
+#' Each name specifies an alternative experiment while each value is the index/name of the assay to aggregate from that experiment.
+#'
 #' Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}.
 #' @param copy.altexps Logical scalar indicating whether to copy the \code{colData} and \code{metadata} of the output SingleCellExperiment into each of its alternative experiments.
 #' @param coldata \link[S4Vectors]{DataFrame} of column data, containing one row for each cell.
@@ -64,6 +68,10 @@
 #' aggr <- aggregateAcrossCells.se(sce, sce$level1class)
 #' head(assay(aggr))
 #' colData(aggr)
+#'
+#' # We can also aggregate within alternative experiments.
+#' aggr2 <- aggregateAcrossCells.se(sce, sce$level1class, altexps="ERCC")
+#' head(assay(altExp(aggr2, "ERCC")))
 #'
 #' @export
 #' @importFrom methods is
@@ -128,18 +136,15 @@ aggregateAcrossCells.se <- function(
 
     if (length(altexps)) {
         mainExpName(se) <- mainExpName(x)
-        ae.names <- altExpNames(x)
-        if (is.numeric(altexps)) {
-            altexps <- ae.names[altexps]
-        }
+        altexps <- .sanitize_altexp_assays(altexps, all.altexps=altExpNames(x), default.assay.type=assay.type)
 
-        for (ae in altexps) {
+        for (ae in names(altexps)) {
             ae.se <- Recall(
-                altExp(se,ae),
+                altExp(x, ae),
                 out$index,
                 num.threads=num.threads,
                 more.aggr.args=more.aggr.args,
-                assay.type=assay.type,
+                assay.type=altexps[[ae]],
                 altexps=NULL,
                 output.prefix=NULL,
                 counts.name=NULL,

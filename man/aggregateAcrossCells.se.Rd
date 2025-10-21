@@ -45,8 +45,12 @@ If \code{NULL}, the indices are not reported.}
 \item{more.coldata.args}{Named list of additional arguments to pass to \code{aggregateColData}.
 Only relevant if \code{include.coldata=TRUE}.}
 
-\item{altexps}{Integer or character vector of alternative experiments of \code{x} to aggregate.
+\item{altexps}{Unnamed integer or character vector specifyig the indices/names of alternative experiments of \code{x} to aggregate.
 The aggregated assay from each alternative experiment is determined by \code{assay.type}.
+
+Alternatively, this may be a named integer or character vector.
+Each name specifies an alternative experiment while each value is the index/name of the assay to aggregate from that experiment.
+
 Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}.}
 
 \item{copy.altexps}{Logical scalar indicating whether to copy the \code{colData} and \code{metadata} of the output SingleCellExperiment into each of its alternative experiments.}
@@ -102,6 +106,10 @@ sce <- getTestRnaData.se("start")
 aggr <- aggregateAcrossCells.se(sce, sce$level1class)
 head(assay(aggr))
 colData(aggr)
+
+# We can also aggregate within alternative experiments.
+aggr2 <- aggregateAcrossCells.se(sce, sce$level1class, altexps="ERCC")
+head(assay(altExp(aggr2, "ERCC")))
 
 }
 \author{
