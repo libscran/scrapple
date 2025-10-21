@@ -36,7 +36,7 @@ If \code{NULL}, additional metrics are not stored.}
 }
 \value{
 \code{x} is returned with the combined embeddings stored in its \code{rowData}.
-The scaling factor for each embedding are stored in the \code{metadata}.
+The scaling factors for all embeddings are stored in the \code{metadata}.
 }
 \description{
 Scale embeddings for different modalities to equalize their intra-population variance,

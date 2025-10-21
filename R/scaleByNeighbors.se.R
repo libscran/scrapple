@@ -16,7 +16,8 @@
 #' If \code{NULL}, additional metrics are not stored.
 #'
 #' @return \code{x} is returned with the combined embeddings stored in its \code{rowData}.
-#' The scaling factor for each embedding are stored in the \code{metadata}.
+#' The scaling factors for all embeddings are stored in the \code{metadata}.
+#'
 #' @author Aaron Lun
 #'
 #' @examples
@@ -29,7 +30,7 @@
 #' \code{\link{scaleByNeighbors}} from the \pkg{scrapper} package.
 #'
 #' @export
-#' @importFrom SingleCellExperiment altExp altExpNames reducedDim mainExpName reducedDim<-
+#' @importFrom SingleCellExperiment altExp altExpNames reducedDim reducedDimNames mainExpName reducedDim<-
 #' @importFrom S4Vectors metadata metadata<-
 scaleByNeighbors.se <- function(
     x,
@@ -42,7 +43,7 @@ scaleByNeighbors.se <- function(
     meta.name = "combined"
 ) {
     all.embeddings <- list()
-    main.reddims <- unique(main.reddims)
+    main.reddims <- .sanitize_reddims(main.reddims, reducedDimNames(x))
     for (r in main.reddims) {
         all.embeddings <- append(all.embeddings, list(t(reducedDim(x, r))))
     }
@@ -50,7 +51,7 @@ scaleByNeighbors.se <- function(
     altexp.reddims <- altexp.reddims[!duplicated(names(altexp.reddims))]
     for (ae in names(altexp.reddims)) {
         ae.se <- altExp(x, ae)
-        cur.reddim <- unique(altexp.reddims[[ae]])
+        cur.reddim <- .sanitize_reddims(altexp.reddims[[ae]], reducedDimNames(ae.se))
         for (r in cur.reddim) {
             all.embeddings <- append(all.embeddings, list(t(reducedDim(ae.se, r))))
         }
@@ -95,4 +96,13 @@ scaleByNeighbors.se <- function(
     }
 
     x
+}
+
+.sanitize_reddims <- function(reddims, all.reddims) {
+    reddims <- unique(reddims)
+    if (is.integer(reddims)) {
+        all.reddims[reddims]
+    } else {
+        reddims
+    }
 }
