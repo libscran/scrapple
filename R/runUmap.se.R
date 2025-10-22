@@ -33,15 +33,11 @@ runUmap.se <- function(
     reddim.type = "PCA", 
     output.name = "UMAP"
 ) {
-    res <- do.call(
+    res <- .call(
         scrapper::runUmap,
-        c(
-            list(t(reducedDim(x, reddim.type))),
-            .collapse_args(
-                list(num.dim=num.dim, min.dist=min.dist, num.neighbors=num.neighbors, num.threads=num.threads),
-                more.umap.args
-            )
-        )
+        list(t(reducedDim(x, reddim.type))),
+        list(num.dim=num.dim, min.dist=min.dist, num.neighbors=num.neighbors, num.threads=num.threads),
+        more.umap.args
     )
 
     .add_umap_results(x, res, output.name=output.name)

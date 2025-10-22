@@ -70,15 +70,11 @@ aggregateAcrossGenes.se <- function(
         }
     }
 
-    vecs <- do.call(
+    vecs <- .call(
         scrapper::aggregateAcrossGenes,
-        c(
-            list(assay(x, assay.type)),
-            .collapse_args(
-                list(sets=sets, num.threads=num.threads),
-                more.aggr.args
-            )
-        )
+        list(assay(x, assay.type)),
+        list(sets=sets, num.threads=num.threads),
+        more.aggr.args
     )
     if (length(vecs)) {
         mat <- do.call(rbind, vecs)

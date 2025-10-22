@@ -48,15 +48,11 @@ runPca.se <- function(
         y <- DelayedArray(y)[features,,drop=FALSE] # ensure that no copy is made.
     }
 
-    out <- do.call(
+    out <- .call(
         scrapper::runPca,
-        c(
-            list(y),
-            .collapse_args(
-                list(number=number, block=block, num.threads=num.threads),
-                more.pca.args
-            )
-        )
+        list(y),
+        list(number=number, block=block, num.threads=num.threads),
+        more.pca.args
     )
 
     reducedDim(x, output.name) <- t(out$components)

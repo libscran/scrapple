@@ -34,15 +34,11 @@ scoreGeneSet.se <- function(
     more.score.args = list(),
     assay.type = "logcounts"
 ) {
-    out <- do.call(
+    out <- .call(
         scrapper::scoreGeneSet,
-        c(
-            list(assay(x, assay.type)),
-            .collapse_args(
-                list(set=set, block=block, num.threads=num.threads),
-                more.score.args
-            )
-        )
+        list(assay(x, assay.type)),
+        list(set=set, block=block, num.threads=num.threads),
+        more.score.args
     )
 
     names(out$scores) <- colnames(x)

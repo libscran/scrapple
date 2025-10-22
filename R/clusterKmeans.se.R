@@ -28,12 +28,11 @@
 #' @importFrom S4Vectors metadata metadata<-
 #' @importFrom SummarizedExperiment colData colData<-
 clusterKmeans.se <- function(x, k, more.kmeans.args = list(), reddim.type = "PCA", output.name = "clusters", meta.name = NULL) {
-    clout <- do.call(
+    clout <- .call(
         scrapper::clusterKmeans,
-        .collapse_args(
-            list(t(reducedDim(x, reddim.type)), k=k),
-            more.kmeans.args
-        )
+        list(t(reducedDim(x, reddim.type))),
+        list(k=k),
+        more.kmeans.args
     )
 
     colData(x)[[output.name]] <- clout$clusters

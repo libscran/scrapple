@@ -45,26 +45,18 @@ chooseRnaHvgs.se <- function(
     output.prefix = NULL,
     include.per.block = FALSE
 ) {
-    info <- do.call(
+    info <- .call(
         scrapper::modelGeneVariances,
-        c(
-            list(assay(x, assay.type)),
-            .collapse_args(
-                list(block=block, num.threads=num.threads),
-                more.var.args
-            )
-        )
+        list(assay(x, assay.type)),
+        list(block=block, num.threads=num.threads),
+        more.var.args
     )
 
-    hvg.index <- do.call(
+    hvg.index <- .call(
         scrapper::chooseHighlyVariableGenes,
-        c(
-            list(info$statistics$residuals),
-            .collapse_args(
-                list(top=top, larger=TRUE),
-                more.choose.args
-            )
-        )
+        list(info$statistics$residuals),
+        list(top=top, larger=TRUE),
+        more.choose.args
     )
 
     df <- formatModelGeneVariancesResult(info, choose.res=hvg.index, include.per.block=include.per.block)

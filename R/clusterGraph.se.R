@@ -44,15 +44,11 @@ clusterGraph.se <- function(
     meta.name = NULL,
     graph.name = NULL
 ) {
-    graph.out <- do.call(
+    graph.out <- .call(
         scrapper::buildSnnGraph,
-        c(
-            list(t(reducedDim(x, reddim.type))),
-            .collapse_args(
-                list(num.neighbors=num.neighbors, num.threads=num.threads, as.pointer=is.null(graph.name)),
-                more.build.args
-            )
-        )
+        list(t(reducedDim(x, reddim.type))),
+        list(num.neighbors=num.neighbors, num.threads=num.threads, as.pointer=is.null(graph.name)),
+        more.build.args
     )
     x <- .add_build_graph_results(x, graph.out, graph.name=graph.name)
 
@@ -62,12 +58,11 @@ clusterGraph.se <- function(
         res.args$leiden.resolution <- resolution
     }
 
-    clust.out <- do.call(
+    clust.out <- .call(
         scrapper::clusterGraph,
-        c(
-            list(graph.out),
-            .collapse_args(res.args, more.cluster.args)
-        )
+        list(graph.out),
+        res.args,
+        more.cluster.args
     )
 
     .add_cluster_graph_results(x, clust.out, output.name=output.name, meta.name=meta.name)

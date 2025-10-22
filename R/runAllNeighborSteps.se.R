@@ -70,23 +70,19 @@ runAllNeighborSteps.se <- function(
     if (is.null(cluster.output.name)) {
         more.cluster.graph.args <- NULL 
     }
-
     more.neighbor.args$return.graph <- !is.null(build.graph.name)
 
-    outputs <- do.call(scrapper::runAllNeighborSteps,
-        c(
-            list(t(reducedDim(x, reddim.type))),
-            .collapse_args(
-                list(
-                    runUmap.args=more.umap.args,
-                    runTsne.args=more.tsne.args,
-                    buildSnnGraph.args=more.build.graph.args,
-                    clusterGraph.args=more.cluster.graph.args,
-                    num.threads=num.threads
-                ),
-                more.neighbor.args
-            )
-        )
+    outputs <- .call(
+        scrapper::runAllNeighborSteps,
+        list(t(reducedDim(x, reddim.type))),
+        list(
+            runUmap.args=more.umap.args,
+            runTsne.args=more.tsne.args,
+            buildSnnGraph.args=more.build.graph.args,
+            clusterGraph.args=more.cluster.graph.args,
+            num.threads=num.threads
+        ),
+        more.neighbor.args
     )
 
     if (!is.null(umap.output.name)) {

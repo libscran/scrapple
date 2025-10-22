@@ -30,15 +30,11 @@ correctMnn.se <- function(
     reddim.type = "PCA", 
     output.name = "MNN"
 ) {
-    out <- do.call(
+    out <- .call(
         scrapper::correctMnn,
-        c(
-            list(t(reducedDim(x, reddim.type))),
-            .collapse_args(
-                list(block=block),
-                more.mnn.args
-            )
-        )
+        list(t(reducedDim(x, reddim.type))),
+        list(block=block),
+        more.mnn.args
     )
 
     reducedDim(x, output.name) <- t(out$corrected)

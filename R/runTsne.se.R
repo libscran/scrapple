@@ -31,15 +31,11 @@ runTsne.se <- function(
     reddim.type = "PCA", 
     output.name = "TSNE"
 ) {
-    out <- do.call(
+    out <- .call(
         scrapper::runTsne,
-        c(
-            list(t(reducedDim(x, reddim.type))),
-            .collapse_args(
-                list(perplexity=perplexity, num.threads=num.threads),
-                more.tsne.args
-            )
-        )
+        list(t(reducedDim(x, reddim.type))),
+        list(perplexity=perplexity, num.threads=num.threads),
+        more.tsne.args
     )
 
     .add_tsne_results(x, out, output.name)

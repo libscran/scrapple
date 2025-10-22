@@ -58,15 +58,11 @@ scaleByNeighbors.se <- function(
         altexp.reddims[[ae]] <- cur.reddim
     }
 
-    out <- do.call(
+    out <- .call(
         scrapper::scaleByNeighbors,
-        c(
-            list(all.embeddings),
-            .collapse_args(
-                list(num.neighbors=num.neighbors, num.threads=num.threads),
-                more.scale.args
-            )
-        )
+        list(all.embeddings),
+        list(num.neighbors=num.neighbors, num.threads=num.threads),
+        more.scale.args
     )
 
     reducedDim(x, output.name) <- t(out$combined)

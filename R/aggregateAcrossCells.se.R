@@ -102,15 +102,11 @@ aggregateAcrossCells.se <- function(
         output.prefix <- NULL
     }
 
-    out <- do.call(
+    out <- .call(
         scrapper::aggregateAcrossCells,
-        c(
-            list(assay(x, assay.type)),
-            .collapse_args(
-                list(factors=factors, num.threads=num.threads),
-                more.aggr.args
-            )
-        )
+        list(assay(x, assay.type)),
+        list(factors=factors, num.threads=num.threads),
+        more.aggr.args
     )
 
     CON <- SummarizedExperiment

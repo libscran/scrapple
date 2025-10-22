@@ -53,15 +53,11 @@ scoreMarkers.se <- function(
     extra.columns = NULL,
     order.by = TRUE
 ) {
-    res <- do.call(
+    res <- .call(
         scrapper::scoreMarkers,
-        c(
-            list(assay(x, assay.type), groups=groups),
-            .collapse_args(
-                list(block=block, num.threads=num.threads),
-                more.marker.args
-            )
-        )
+        list(assay(x, assay.type), groups=groups),
+        list(block=block, num.threads=num.threads),
+        more.marker.args
     )
 
     if (!is.character(extra.columns)) {
