@@ -22,7 +22,7 @@
 #' \code{\link[scrapper]{runTsne}} from the \pkg{scrapper} package.
 #'  
 #' @export
-#' @importFrom SingleCellExperiment reducedDim reducedDim<-
+#' @importFrom SingleCellExperiment reducedDim
 runTsne.se <- function(
     x,
     perplexity = 30,
@@ -42,6 +42,11 @@ runTsne.se <- function(
         )
     )
 
-    reducedDim(x, output.name) <- out
+    .add_tsne_results(x, out, output.name)
+}
+
+#' @importFrom SingleCellExperiment reducedDim<-
+.add_tsne_results <- function(x, res, output.name) {
+    reducedDim(x, output.name) <- res
     x
 }

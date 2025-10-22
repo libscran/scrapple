@@ -48,7 +48,7 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca", "clust
     }
 
     if (!("qc" %in% names(cache$rna))) {
-        sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "mt-")), altexp.proportions=c(ercc="ERCC"))
+        sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "mt-")), altexp.proportions="ERCC")
         sce <- sce[,sce$keep]
         cache$rna$qc <- sce
     }

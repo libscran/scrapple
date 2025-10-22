@@ -6,10 +6,10 @@
 #' @param x A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 #' Rows correspond to genomic features and columns correspond to cells.
 #' @param num.neighbors,num.threads Arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.
-#' @param more.snn.args Named list of further arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.
+#' @param more.build.args Named list of further arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.
 #' @param method,resolution Arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
 #' For \code{resolution}, this is either passed to \code{multilevel.resolution} or \code{leiden.resolution} depending on \code{method}.
-#' @param more.graph.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
+#' @param more.cluster.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
 #' @param output.name String containing the name of the column of the \code{\link[SummarizedExperiment]{colData}} in which to store the cluster assignments.
 #' @param meta.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store extra clustering output.
@@ -31,16 +31,14 @@
 #' 
 #' @export
 #' @importFrom SingleCellExperiment reducedDim
-#' @importFrom S4Vectors metadata metadata<-
-#' @importFrom SummarizedExperiment colData colData<-
 clusterGraph.se <- function(
     x,
     num.neighbors = 10,
     num.threads = 1,
-    more.snn.args = list(),
+    more.build.args = list(),
     method = "multilevel",
     resolution = NULL,
-    more.graph.args = list(),
+    more.cluster.args = list(),
     reddim.type = "PCA",
     output.name = "clusters",
     meta.name = NULL,
@@ -52,13 +50,11 @@ clusterGraph.se <- function(
             list(t(reducedDim(x, reddim.type))),
             .collapse_args(
                 list(num.neighbors=num.neighbors, num.threads=num.threads, as.pointer=is.null(graph.name)),
-                more.snn.args
+                more.build.args
             )
         )
     )
-    if (!is.null(graph.name)) {
-        metadata(x)[[graph.name]] <- graph.out
-    }
+    x <- .add_build_graph_results(x, graph.out, graph.name=graph.name)
 
     res.args <- list()
     if (!is.null(resolution)) {
@@ -70,15 +66,28 @@ clusterGraph.se <- function(
         scrapper::clusterGraph,
         c(
             list(graph.out),
-            .collapse_args(res.args, more.graph.args)
+            .collapse_args(res.args, more.cluster.args)
         )
     )
 
-    colData(x)[[output.name]] <- clust.out$membership
-    if (!is.null(meta.name)) {
-        clust.out$membership <- NULL
-        metadata(x)[[meta.name]] <- clust.out
-    }
+    .add_cluster_graph_results(x, clust.out, output.name=output.name, meta.name=meta.name)
+}
 
+#' @importFrom S4Vectors metadata metadata<-
+.add_build_graph_results <- function(x, graph, graph.name) {
+    if (!is.null(graph.name)) {
+        metadata(x)[[graph.name]] <- graph.out
+    }
+    x
+}
+
+#' @importFrom S4Vectors metadata metadata<-
+#' @importFrom SummarizedExperiment colData colData<-
+.add_cluster_graph_results <- function(x, res, output.name, meta.name) {
+    colData(x)[[output.name]] <- res$membership
+    if (!is.null(meta.name)) {
+        res$membership <- NULL
+        metadata(x)[[meta.name]] <- res
+    }
     x
 }

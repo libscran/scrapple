@@ -8,10 +8,10 @@ clusterGraph.se(
   x,
   num.neighbors = 10,
   num.threads = 1,
-  more.snn.args = list(),
+  more.build.args = list(),
   method = "multilevel",
   resolution = NULL,
-  more.graph.args = list(),
+  more.cluster.args = list(),
   reddim.type = "PCA",
   output.name = "clusters",
   meta.name = NULL,
@@ -24,12 +24,12 @@ Rows correspond to genomic features and columns correspond to cells.}
 
 \item{num.neighbors, num.threads}{Arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.}
 
-\item{more.snn.args}{Named list of further arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.}
+\item{more.build.args}{Named list of further arguments to be passed to \code{\link[scrapper]{buildSnnGraph}}.}
 
 \item{method, resolution}{Arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
 For \code{resolution}, this is either passed to \code{multilevel.resolution} or \code{leiden.resolution} depending on \code{method}.}
 
-\item{more.graph.args}{Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.}
+\item{more.cluster.args}{Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.}
 
 \item{reddim.type}{Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.}
 
