@@ -9,7 +9,8 @@ correctMnn.se(
   block,
   more.mnn.args = list(),
   reddim.type = "PCA",
-  output.name = "MNN"
+  output.name = "MNN",
+  delayed.transpose = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ Rows correspond to genomic features and columns correspond to cells.}
 \item{reddim.type}{String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.}
 
 \item{output.name}{String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the corrected embedding.}
+
+\item{delayed.transpose}{Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.}
 }
 \value{
 \code{x} is returned with the corrected embedding stored as a \code{reducedDim} entry.

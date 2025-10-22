@@ -13,7 +13,8 @@ runPca.se(
   more.pca.args = list(),
   assay.type = "logcounts",
   output.name = "PCA",
-  meta.name = "PCA"
+  meta.name = "PCA",
+  delayed.transpose = FALSE
 )
 }
 \arguments{

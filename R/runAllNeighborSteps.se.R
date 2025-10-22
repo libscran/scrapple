@@ -20,6 +20,7 @@
 #' If \code{NULL}, these additional outputs are not stored.
 #' @param more.neighbor.args Named list of additional arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform a nearest neighbor search.
+#' @param delayed.transpose Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.
 #' @param num.threads Integer specifying the number of threads to use.
 #'
 #' @return \code{x} is returned with additional coordinates stored in its \code{\link[SingleCellExperiment]{reducedDims}}
@@ -74,7 +75,7 @@ runAllNeighborSteps.se <- function(
 
     outputs <- .call(
         scrapper::runAllNeighborSteps,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(
             runUmap.args=more.umap.args,
             runTsne.args=more.tsne.args,
@@ -85,10 +86,10 @@ runAllNeighborSteps.se <- function(
         more.neighbor.args
     )
 
-    if (!is.null(umap.output.name)) {
+    if (!is.null(tsne.output.name)) {
         x <- .add_tsne_results(x, outputs$runTsne, output.name=tsne.output.name)
     }
-    if (!is.null(tsne.output.name)) {
+    if (!is.null(umap.output.name)) {
         x <- .add_umap_results(x, outputs$runUmap, output.name=umap.output.name)
     }
     if (!is.null(cluster.output.name)) {

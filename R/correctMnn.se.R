@@ -8,6 +8,7 @@
 #' @param more.mnn.args Named list of additional arguments to pass to \code{\link[scrapper]{correctMnn}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the corrected embedding.
+#' @param delayed.transpose Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.
 #'
 #' @return \code{x} is returned with the corrected embedding stored as a \code{reducedDim} entry.
 #' @author Aaron Lun
@@ -22,21 +23,20 @@
 #' \code{\link[scrapper]{correctMnn}} from the \pkg{scrapper} package.
 #'
 #' @export
-#' @importFrom SingleCellExperiment reducedDim reducedDim<-
 correctMnn.se <- function(
     x,
     block,
     more.mnn.args = list(),
     reddim.type = "PCA", 
-    output.name = "MNN"
+    output.name = "MNN",
+    delayed.transpose = FALSE
 ) {
     out <- .call(
         scrapper::correctMnn,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(block=block),
         more.mnn.args
     )
 
-    reducedDim(x, output.name) <- t(out$corrected)
-    x
+    .add_transposed_reddim(x, output.name, out$corrected, delayed.transpose)
 }

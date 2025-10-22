@@ -30,7 +30,7 @@
 clusterKmeans.se <- function(x, k, more.kmeans.args = list(), reddim.type = "PCA", output.name = "clusters", meta.name = NULL) {
     clout <- .call(
         scrapper::clusterKmeans,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(k=k),
         more.kmeans.args
     )

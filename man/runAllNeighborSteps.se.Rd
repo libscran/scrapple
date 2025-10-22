@@ -50,6 +50,8 @@ If \code{NULL}, these additional outputs are not stored.}
 \item{reddim.type}{String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform a nearest neighbor search.}
 
 \item{num.threads}{Integer specifying the number of threads to use.}
+
+\item{delayed.transpose}{Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.}
 }
 \value{
 \code{x} is returned with additional coordinates stored in its \code{\link[SingleCellExperiment]{reducedDims}}

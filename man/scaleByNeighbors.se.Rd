@@ -12,7 +12,8 @@ scaleByNeighbors.se(
   num.threads = 1,
   more.scale.args = list(),
   output.name = "combined",
-  meta.name = "combined"
+  meta.name = "combined",
+  delayed.transpose = FALSE
 )
 }
 \arguments{
@@ -33,6 +34,8 @@ Each vector contains the names/indices of the \code{\link[SingleCellExperiment]{
 
 \item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional metrics.
 If \code{NULL}, additional metrics are not stored.}
+
+\item{delayed.transpose}{Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.}
 }
 \value{
 \code{x} is returned with the combined embeddings stored in its \code{rowData}.

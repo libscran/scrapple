@@ -23,3 +23,34 @@
         output
     }
 }
+
+#' @importFrom Matrix t
+#' @importFrom DelayedArray DelayedArray
+#' @importFrom SingleCellExperiment reducedDim<-
+.add_transposed_reddim <- function(x, name, mat, delayed) {
+    if (delayed) {
+        mat <- DelayedArray(mat)
+    }
+    reducedDim(x, name) <- t(mat)
+    x
+}
+
+#' @importFrom SingleCellExperiment reducedDim
+#' @importFrom Matrix t
+#' @importClassesFrom DelayedArray DelayedArray
+#' @importFrom methods is
+.get_transposed_reddim <- function(x, name) {
+    mat <- reducedDim(x, name, withDimnames=FALSE)
+    mat <- t(mat)
+
+    if (is.matrix(mat)) {
+        return(mat)
+    } else if (is(mat, "DelayedArray")) {
+        # Possibly a no-op if .add_transposed_reddim was set with delayed=TRUE.
+        if (is.matrix(mat@seed)) {
+            return(mat@seed)
+        }
+    }
+
+    return(as.matrix(mat))
+}

@@ -41,7 +41,8 @@ runPca.se <- function(
     more.pca.args = list(),
     assay.type = "logcounts",
     output.name = "PCA",
-    meta.name = "PCA"
+    meta.name = "PCA",
+    delayed.transpose = FALSE
 ) {
     y <- assay(x, assay.type)
     if (!is.null(features)) {
@@ -55,7 +56,7 @@ runPca.se <- function(
         more.pca.args
     )
 
-    reducedDim(x, output.name) <- t(out$components)
+    x <- .add_transposed_reddim(x, output.name, out$components, delayed.transpose)
     if (!is.null(meta.name)) {
         out$components <- NULL
         metadata(x)[[meta.name]] <- out

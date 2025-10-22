@@ -22,7 +22,6 @@
 #' \code{\link[scrapper]{runTsne}} from the \pkg{scrapper} package.
 #'  
 #' @export
-#' @importFrom SingleCellExperiment reducedDim
 runTsne.se <- function(
     x,
     perplexity = 30,
@@ -33,16 +32,16 @@ runTsne.se <- function(
 ) {
     out <- .call(
         scrapper::runTsne,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(perplexity=perplexity, num.threads=num.threads),
         more.tsne.args
     )
 
-    .add_tsne_results(x, out, output.name)
+    .add_tsne_results(x, output.name, out)
 }
 
 #' @importFrom SingleCellExperiment reducedDim<-
-.add_tsne_results <- function(x, res, output.name) {
+.add_tsne_results <- function(x, output.name, res) {
     reducedDim(x, output.name) <- res
     x
 }

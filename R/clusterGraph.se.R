@@ -46,7 +46,7 @@ clusterGraph.se <- function(
 ) {
     graph.out <- .call(
         scrapper::buildSnnGraph,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(num.neighbors=num.neighbors, num.threads=num.threads, as.pointer=is.null(graph.name)),
         more.build.args
     )

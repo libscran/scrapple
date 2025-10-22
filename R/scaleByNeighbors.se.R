@@ -14,6 +14,7 @@
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the combined embeddings.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional metrics.
 #' If \code{NULL}, additional metrics are not stored.
+#' @param delayed.transpose Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.
 #'
 #' @return \code{x} is returned with the combined embeddings stored in its \code{rowData}.
 #' The scaling factors for all embeddings are stored in the \code{metadata}.
@@ -40,12 +41,13 @@ scaleByNeighbors.se <- function(
     num.threads = 1,
     more.scale.args = list(),
     output.name = "combined",
-    meta.name = "combined"
+    meta.name = "combined",
+    delayed.transpose = FALSE
 ) {
     all.embeddings <- list()
     main.reddims <- .sanitize_reddims(main.reddims, reducedDimNames(x))
     for (r in main.reddims) {
-        all.embeddings <- append(all.embeddings, list(t(reducedDim(x, r))))
+        all.embeddings <- append(all.embeddings, list(.get_transposed_reddim(x, r)))
     }
 
     altexp.reddims <- altexp.reddims[!duplicated(names(altexp.reddims))]
@@ -53,7 +55,7 @@ scaleByNeighbors.se <- function(
         ae.se <- altExp(x, ae)
         cur.reddim <- .sanitize_reddims(altexp.reddims[[ae]], reducedDimNames(ae.se))
         for (r in cur.reddim) {
-            all.embeddings <- append(all.embeddings, list(t(reducedDim(ae.se, r))))
+            all.embeddings <- append(all.embeddings, list(.get_transposed_reddim(ae.se, r)))
         }
         altexp.reddims[[ae]] <- cur.reddim
     }
@@ -65,7 +67,7 @@ scaleByNeighbors.se <- function(
         more.scale.args
     )
 
-    reducedDim(x, output.name) <- t(out$combined)
+    x <- .add_transposed_reddim(x, output.name, out$combined, delayed.transpose)
     if (!is.null(meta.name)) {
         out$combined <- NULL
 

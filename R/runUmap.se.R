@@ -22,7 +22,6 @@
 #' \code{\link[scrapper]{runUmap}} from the \pkg{scrapper} package.
 #'  
 #' @export
-#' @importFrom SingleCellExperiment reducedDim
 runUmap.se <- function(
     x,
     num.dim = 2,
@@ -35,16 +34,16 @@ runUmap.se <- function(
 ) {
     res <- .call(
         scrapper::runUmap,
-        list(t(reducedDim(x, reddim.type))),
+        list(.get_transposed_reddim(x, reddim.type)),
         list(num.dim=num.dim, min.dist=min.dist, num.neighbors=num.neighbors, num.threads=num.threads),
         more.umap.args
     )
 
-    .add_umap_results(x, res, output.name=output.name)
+    .add_umap_results(x, output.name, res)
 }
 
 #' @importFrom SingleCellExperiment reducedDim<-
-.add_umap_results <- function(x, res, output.name) {
+.add_umap_results <- function(x, output.name, res) {
     reducedDim(x, output.name) <- res
     x
 }
