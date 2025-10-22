@@ -8,8 +8,8 @@
 #' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestCrisprQcThresholds}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the CRISPR count matrix.
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
-#' @param thresholds.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
-#' If \code{NULL}, thresholds are not stored in the metadata.
+#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the filtering thresholds.
+#' If \code{NULL}, additional outputs are not reported. 
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
 #' @param compute.res List returned by \code{\link[scrapper]{computeCrisprQcMetrics}}.
@@ -34,7 +34,7 @@
 #' sce <- altExp(getTestCrisprData.se(), "CRISPR Guide Capture")
 #' sce <- quickCrisprQc.se(sce)
 #' colData(sce)[,c("sum", "detected", "max.value", "max.index")]
-#' metadata(sce)$thresholds
+#' metadata(sce)$qc$thresholds
 #' summary(sce$keep)
 #' 
 #' @export
@@ -47,7 +47,7 @@ quickCrisprQc.se <- function(
     block = NULL,
     assay.type = "counts",
     output.prefix = NULL,
-    thresholds.name = "thresholds"
+    meta.name = "qc"
 ) {
     metrics <- scrapper::computeCrisprQcMetrics(assay(x, assay.type, withDimnames=FALSE), num.threads=num.threads)
     thresholds <- scrapper::suggestCrisprQcThresholds(metrics, block=block, num.mads=num.mads)
@@ -58,8 +58,8 @@ quickCrisprQc.se <- function(
     colnames(df) <- paste0(output.prefix, colnames(df))
     colData(x) <- cbind(colData(x), df)
 
-    if (!is.null(thresholds.name)) {
-        metadata(x)[[thresholds.name]] <- thresholds
+    if (!is.null(meta.name)) {
+        metadata(x)[[meta.name]] <- list(thresholds=thresholds)
     }
 
     x

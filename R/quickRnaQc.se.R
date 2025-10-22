@@ -15,8 +15,8 @@
 #' Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the RNA count matrix.
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
-#' @param thresholds.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
-#' If \code{NULL}, thresholds are not stored in the metadata.
+#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the additional outputs such as the filtering thresholds.
+#' If \code{NULL}, additional outputs are not reported. 
 #' @param flatten Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 #' If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.
 #' @param compute.res List returned by \code{\link[scrapper]{computeRnaQcMetrics}}.
@@ -55,7 +55,7 @@
 #' sce <- getTestRnaData.se()
 #' sce <- quickRnaQc.se(sce, subsets=list(mito=grepl("^mt", rownames(sce))))
 #' colData(sce)[,c("sum", "detected", "mito.proportion")]
-#' metadata(sce)$thresholds
+#' metadata(sce)$qc$thresholds
 #' summary(sce$keep)
 #'
 #' # Computing spike-in proportions, if available.
@@ -81,7 +81,7 @@ quickRnaQc.se <- function(
     altexp.proportions = NULL,
     assay.type = "counts",
     output.prefix = NULL, 
-    thresholds.name = "thresholds",
+    meta.name = "qc",
     flatten = TRUE
 ) {
     metrics <- computeRnaQcMetricsWithAltExps(x, subsets, altexp.proportions=altexp.proportions, num.threads=num.threads)
@@ -101,8 +101,8 @@ quickRnaQc.se <- function(
         }
     }
 
-    if (!is.null(thresholds.name)) {
-        metadata(x)[[thresholds.name]] <- thresholds
+    if (!is.null(meta.name)) {
+        metadata(x)[[meta.name]] <- list(thresholds=thresholds)
     }
 
     x

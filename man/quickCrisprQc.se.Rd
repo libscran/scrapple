@@ -12,7 +12,7 @@ quickCrisprQc.se(
   block = NULL,
   assay.type = "counts",
   output.prefix = NULL,
-  thresholds.name = "thresholds"
+  meta.name = "qc"
 )
 
 formatComputeCrisprQcMetricsResult(compute.res)
@@ -29,8 +29,8 @@ Rows correspond to CRISPR guides and columns correspond to cells.}
 
 \item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
 
-\item{thresholds.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
-If \code{NULL}, thresholds are not stored in the metadata.}
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the filtering thresholds.
+If \code{NULL}, additional outputs are not reported.}
 
 \item{compute.res}{List returned by \code{\link[scrapper]{computeCrisprQcMetrics}}.}
 
@@ -52,7 +52,7 @@ Quickly compute quality control (QC) metrics, thresholds and filters from CRISPR
 sce <- altExp(getTestCrisprData.se(), "CRISPR Guide Capture")
 sce <- quickCrisprQc.se(sce)
 colData(sce)[,c("sum", "detected", "max.value", "max.index")]
-metadata(sce)$thresholds
+metadata(sce)$qc$thresholds
 summary(sce$keep)
 
 }

@@ -14,7 +14,7 @@ quickRnaQc.se(
   altexp.proportions = NULL,
   assay.type = "counts",
   output.prefix = NULL,
-  thresholds.name = "thresholds",
+  meta.name = "qc",
   flatten = TRUE
 )
 
@@ -40,8 +40,8 @@ Only relevant if \code{x} is a \link[SingleCellExperiment]{SingleCellExperiment}
 
 \item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
 
-\item{thresholds.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
-If \code{NULL}, thresholds are not stored in the metadata.}
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the additional outputs such as the filtering thresholds.
+If \code{NULL}, additional outputs are not reported.}
 
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
@@ -77,7 +77,7 @@ These proportions will be used for filtering in the same manner as the proportio
 sce <- getTestRnaData.se()
 sce <- quickRnaQc.se(sce, subsets=list(mito=grepl("^mt", rownames(sce))))
 colData(sce)[,c("sum", "detected", "mito.proportion")]
-metadata(sce)$thresholds
+metadata(sce)$qc$thresholds
 summary(sce$keep)
 
 # Computing spike-in proportions, if available.

@@ -10,8 +10,8 @@
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the factor combinations.
 #' @param counts.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column containing the cell count for each factor combination.
 #' If \code{NULL}, the cell counts are not reported.
-#' @param index.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry containing the combination index for each cell.
-#' If \code{NULL}, the indices are not reported.
+#' @param meta.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry containing additional outputs like the combination indices.
+#' If \code{NULL}, additional outputs are not reported.
 #' @param include.coldata Logical scalar indicating whether to add the aggregated \code{colData} from \code{x} to the output.
 #' @param more.coldata.args Named list of additional arguments to pass to \code{aggregateColData}.
 #' Only relevant if \code{include.coldata=TRUE}.
@@ -47,8 +47,8 @@
 #' \item Additional \code{colData} from \code{x} if \code{include.coldata=TRUE}.
 #' This is aggregated with \code{aggregateColData} on the combination indices.
 #' }
-#' The metadata contains a vector of length equal to the number of cells in \code{x},
-#' where each value is an index of the factor combination (i.e., column of the output object) to which that cell was assigned.
+#' The metadata contains a list named as \code{meta.name}, containing a \code{index} integer vector of length equal to the number of cells in \code{x}.
+#' Each entry of this vector is an index of the factor combination (i.e., column of the output object) to which the corresponding cell was assigned.
 #'
 #' If \code{altexps} is specified, a SingleCellExperiment is returned instead.
 #' The same aggregation for the main experiment is applied to each alternative experiment.
@@ -86,7 +86,7 @@ aggregateAcrossCells.se <- function(
     assay.type = "counts",
     output.prefix = "factors",
     counts.name = "counts",
-    index.name = "index",
+    meta.name = "aggregated",
     include.coldata = TRUE,
     more.coldata.args = list(),
     altexps = NULL,
@@ -130,8 +130,8 @@ aggregateAcrossCells.se <- function(
         colData(se) <- cbind(colData(se), aggr.cd)
     }
 
-    if (!is.null(index.name)) {
-        metadata(se)[[index.name]] <- out$index
+    if (!is.null(meta.name)) {
+        metadata(se)[[meta.name]] <- list(index=out$index)
     }
 
     if (length(altexps)) {

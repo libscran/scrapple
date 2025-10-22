@@ -13,7 +13,7 @@ quickAdtQc.se(
   block = NULL,
   assay.type = "counts",
   output.prefix = NULL,
-  thresholds.name = "thresholds",
+  meta.name = "qc",
   flatten = TRUE
 )
 
@@ -31,8 +31,8 @@ Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
 
 \item{output.prefix}{String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.}
 
-\item{thresholds.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing the filtering thresholds.
-If \code{NULL}, thresholds are not stored in the metadata.}
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the filtering thresholds.
+If \code{NULL}, additional outputs are not reported.}
 
 \item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
 If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
@@ -54,7 +54,7 @@ Quickly compute quality control (QC) metrics, thresholds and filters from ADT da
 sce <- altExp(getTestAdtData.se(), "ADT")
 sce <- quickAdtQc.se(sce, subsets=list(igg=grepl("IgG", rownames(sce))))
 colData(sce)[,c("sum", "detected", "igg.sum")]
-metadata(sce)$thresholds
+metadata(sce)$qc$thresholds
 summary(sce$keep)
 
 }
