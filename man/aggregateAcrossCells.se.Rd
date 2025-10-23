@@ -11,7 +11,7 @@ aggregateAcrossCells.se(
   num.threads = 1,
   more.aggr.args = list(),
   assay.type = "counts",
-  output.prefix = "factors",
+  output.prefix = "factor.",
   counts.name = "counts",
   meta.name = "aggregated",
   include.coldata = TRUE,
@@ -97,9 +97,7 @@ Aggregate expression values across groups of cells for each gene.
 \details{
 \code{factors} is expected to be an ordinary list of categorical variables.
 However, it may also be a \link[S4Vectors]{List} or \link[S4Vectors]{DataFrame}, which will be coerced to a corresponding list.
-
-Alternatively, \code{factors} may be an atomic vector or factor representing a single variable.
-In such cases, \code{output.prefix} is used as the name.
+Alternatively, \code{factors} may be an atomic vector or factor representing a single variable, named as \code{"unnamed"} in the output \code{colData}.
 }
 \examples{
 sce <- getTestRnaData.se("start")

@@ -44,13 +44,17 @@
     mat <- t(mat)
 
     if (is.matrix(mat)) {
+        colnames(mat) <- colnames(x)
         return(mat)
     } else if (is(mat, "DelayedArray")) {
         # Possibly a no-op if .add_transposed_reddim was set with delayed=TRUE.
         if (is.matrix(mat@seed)) {
-            return(mat@seed)
+            out <- mat@seed
+            colnames(out) <- colnames(x)
+            return(out)
         }
     }
 
+    colnames(mat) <- colnames(x)
     return(as.matrix(mat))
 }

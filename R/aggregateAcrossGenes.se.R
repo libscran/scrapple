@@ -11,10 +11,10 @@
 #' Defaults to \code{assay.type} if it is a string, otherwise \code{"aggregated"}.
 #'
 #' @details
-#' \code{sets} may also be a \link[S4Vectors]{List} subclass,
+#' \code{sets} may be a \link[S4Vectors]{List} subclass,
 #' in which case the \code{\link[S4Vectors]{mcols}} are used as the \code{\link[SummarizedExperiment]{rowData}} of the output object.
-#' Weighted gene sets may be represented by a \link[IRanges]{DataFrameList} where each DataFrame contains two columns,
-#' i.e., the gene identities and the associated weights.
+#' Weighted gene sets can be represented by a list of \pkg{DataFrames} or a \link[IRanges]{DataFrameList},
+#' where each DataFrame contains two columns, i.e., the gene identities and the associated weights.
 #' 
 #' @return A \link[SummarizedExperiment]{SummarizedExperiment} with number of rows equal to the number of gene sets.
 #' The lone assay contains the aggregated values for each gene set for all cells. 
@@ -62,11 +62,11 @@ aggregateAcrossGenes.se <- function(
         if (!is.null(rd)) {
             rownames(rd) <- names(sets) # just in case
         }
-        if (is(sets, "DataFrameList")) {
-            sets <- as.list(sets)
-            sets <- lapply(sets, as.list)
-        } else {
-            sets <- as.list(sets)
+        sets <- as.list(sets)
+    }
+    for (i in seq_along(sets)) {
+        if (is(sets[[i]], "DataFrame")) {
+            sets[[i]] <- as.list(sets[[i]])
         }
     }
 

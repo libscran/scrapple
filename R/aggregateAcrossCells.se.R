@@ -32,9 +32,7 @@
 #' @details
 #' \code{factors} is expected to be an ordinary list of categorical variables.
 #' However, it may also be a \link[S4Vectors]{List} or \link[S4Vectors]{DataFrame}, which will be coerced to a corresponding list.
-#' 
-#' Alternatively, \code{factors} may be an atomic vector or factor representing a single variable.
-#' In such cases, \code{output.prefix} is used as the name.
+#' Alternatively, \code{factors} may be an atomic vector or factor representing a single variable, named as \code{"unnamed"} in the output \code{colData}.
 #' 
 #' @return
 #' For \code{aggregateAcrossCells.se}, a SummarizedExperiment is returned where each column corresponds to a factor combination.
@@ -84,7 +82,7 @@ aggregateAcrossCells.se <- function(
     num.threads = 1,
     more.aggr.args = list(),
     assay.type = "counts",
-    output.prefix = "factors",
+    output.prefix = "factor.",
     counts.name = "counts",
     meta.name = "aggregated",
     include.coldata = TRUE,
@@ -97,9 +95,7 @@ aggregateAcrossCells.se <- function(
     } else if (is(factors, "List")) {
         factors <- as.list(factors)
     } else {
-        factors <- list(factors)
-        names(factors) <- output.prefix
-        output.prefix <- NULL
+        factors <- list(unnamed=factors)
     }
 
     out <- .call(
@@ -144,6 +140,7 @@ aggregateAcrossCells.se <- function(
                 altexps=NULL,
                 output.prefix=NULL,
                 counts.name=NULL,
+                meta.name=NULL,
                 include.coldata=include.coldata
             )
 

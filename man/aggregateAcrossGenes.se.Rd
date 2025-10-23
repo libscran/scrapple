@@ -35,10 +35,10 @@ The \code{\link[SummarizedExperiment]{colData}} is the same as that of \code{x}.
 Aggregate expression values across sets of genes for each cell.
 }
 \details{
-\code{sets} may also be a \link[S4Vectors]{List} subclass,
+\code{sets} may be a \link[S4Vectors]{List} subclass,
 in which case the \code{\link[S4Vectors]{mcols}} are used as the \code{\link[SummarizedExperiment]{rowData}} of the output object.
-Weighted gene sets may be represented by a \link[IRanges]{DataFrameList} where each DataFrame contains two columns,
-i.e., the gene identities and the associated weights.
+Weighted gene sets can be represented by a list of \pkg{DataFrames} or a \link[IRanges]{DataFrameList},
+where each DataFrame contains two columns, i.e., the gene identities and the associated weights.
 }
 \examples{
 sce <- getTestRnaData.se("norm")
