@@ -4,7 +4,7 @@
 #'
 #' @param x A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 #' Rows correspond to genomic features and columns correspond to cells.
-#' @param block Arguments passed to \code{\link[scrapper]{correctMnn}}.
+#' @param block,BNPARAM Arguments passed to \code{\link[scrapper]{correctMnn}}.
 #' @param more.mnn.args Named list of additional arguments to pass to \code{\link[scrapper]{correctMnn}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the corrected embedding.
@@ -26,6 +26,7 @@
 correctMnn.se <- function(
     x,
     block,
+    BNPARAM = AnnoyParam(),
     more.mnn.args = list(),
     reddim.type = "PCA", 
     output.name = "MNN",
@@ -34,7 +35,7 @@ correctMnn.se <- function(
     out <- .call(
         scrapper::correctMnn,
         list(.get_transposed_reddim(x, reddim.type)),
-        list(block=block),
+        list(block=block, BNPARAM=BNPARAM),
         more.mnn.args
     )
 

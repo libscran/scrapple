@@ -7,6 +7,7 @@
 correctMnn.se(
   x,
   block,
+  BNPARAM = AnnoyParam(),
   more.mnn.args = list(),
   reddim.type = "PCA",
   output.name = "MNN",
@@ -17,7 +18,7 @@ correctMnn.se(
 \item{x}{A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 Rows correspond to genomic features and columns correspond to cells.}
 
-\item{block}{Arguments passed to \code{\link[scrapper]{correctMnn}}.}
+\item{block, BNPARAM}{Arguments passed to \code{\link[scrapper]{correctMnn}}.}
 
 \item{more.mnn.args}{Named list of additional arguments to pass to \code{\link[scrapper]{correctMnn}}.}
 

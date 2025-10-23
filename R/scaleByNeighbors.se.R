@@ -33,11 +33,13 @@
 #' @export
 #' @importFrom SingleCellExperiment altExp altExpNames reducedDim reducedDimNames mainExpName reducedDim<-
 #' @importFrom S4Vectors metadata metadata<-
+#' @importFrom BiocNeighbors AnnoyParam
 scaleByNeighbors.se <- function(
     x,
     altexp.reddims,
     main.reddims = "PCA", 
     num.neighbors = 20,
+    BNPARAM = AnnoyParam(),
     num.threads = 1,
     more.scale.args = list(),
     output.name = "combined",
@@ -63,7 +65,7 @@ scaleByNeighbors.se <- function(
     out <- .call(
         scrapper::scaleByNeighbors,
         list(all.embeddings),
-        list(num.neighbors=num.neighbors, num.threads=num.threads),
+        list(num.neighbors=num.neighbors, num.threads=num.threads, BNPARAM=BNPARAM),
         more.scale.args
     )
 

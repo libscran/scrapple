@@ -15,9 +15,10 @@ runAllNeighborSteps.se(
   cluster.output.name = "clusters",
   cluster.meta.name = NULL,
   more.cluster.graph.args = list(),
+  BNPARAM = AnnoyParam(),
+  num.threads = 3,
   more.neighbor.args = list(),
-  reddim.type = "PCA",
-  num.threads = 3
+  reddim.type = "PCA"
 )
 }
 \arguments{
@@ -45,11 +46,11 @@ If \code{NULL}, graph-based clustering is not performed.}
 \item{cluster.meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional clustering outputs.
 If \code{NULL}, these additional outputs are not stored.}
 
+\item{BNPARAM, num.threads}{Arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.}
+
 \item{more.neighbor.args}{Named list of additional arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.}
 
 \item{reddim.type}{String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform a nearest neighbor search.}
-
-\item{num.threads}{Integer specifying the number of threads to use.}
 
 \item{delayed.transpose}{Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.}
 }

@@ -19,6 +19,7 @@ Imports:
     Matrix,
     BiocGenerics,
     IRanges,
+    BiocNeighbors,
     scrapper
 Suggests:
     testthat,

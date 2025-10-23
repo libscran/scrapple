@@ -18,10 +18,10 @@
 #' If \code{NULL}, graph-based clustering is not performed.
 #' @param cluster.meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional clustering outputs.
 #' If \code{NULL}, these additional outputs are not stored.
+#' @param BNPARAM,num.threads Arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.
 #' @param more.neighbor.args Named list of additional arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform a nearest neighbor search.
 #' @param delayed.transpose Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.
-#' @param num.threads Integer specifying the number of threads to use.
 #'
 #' @return \code{x} is returned with additional coordinates stored in its \code{\link[SingleCellExperiment]{reducedDims}}
 #' and clustering output in its \code{\link[SummarizedExperiment]{colData}}.
@@ -58,9 +58,10 @@ runAllNeighborSteps.se <- function(
     cluster.output.name = "clusters",
     cluster.meta.name = NULL,
     more.cluster.graph.args = list(),
+    BNPARAM = AnnoyParam(),
+    num.threads = 3,
     more.neighbor.args = list(),
-    reddim.type = "PCA",
-    num.threads = 3
+    reddim.type = "PCA"
 ) {
     if (is.null(umap.output.name)) {
         more.umap.args <- NULL 
@@ -81,6 +82,7 @@ runAllNeighborSteps.se <- function(
             runTsne.args=more.tsne.args,
             buildSnnGraph.args=more.build.graph.args,
             clusterGraph.args=more.cluster.graph.args,
+            BNPARAM = BNPARAM,
             num.threads=num.threads
         ),
         more.neighbor.args

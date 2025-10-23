@@ -9,6 +9,7 @@ scaleByNeighbors.se(
   altexp.reddims,
   main.reddims = "PCA",
   num.neighbors = 20,
+  BNPARAM = AnnoyParam(),
   num.threads = 1,
   more.scale.args = list(),
   output.name = "combined",
