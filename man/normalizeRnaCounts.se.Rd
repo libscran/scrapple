@@ -13,7 +13,8 @@ normalizeRnaCounts.se(
   log = TRUE,
   pseudo.count = 1,
   assay.type = "counts",
-  output.name = "logcounts"
+  output.name = "logcounts",
+  factor.name = "sizeFactor"
 )
 }
 \arguments{
@@ -33,7 +34,10 @@ see \code{?\link[scrapper]{centerSizeFactors}} for more details.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} with the count matrix.}
 
-\item{output.nme}{String containing the name of the assay to store the normalized matrix.}
+\item{output.name}{String containing the name of the assay to store the normalized matrix.}
+
+\item{factor.name}{String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the size factors in the output object.
+If \code{NULL}, the size factors are not stored.}
 }
 \value{
 \code{x} is returned with a new assay containing the (log-)normalized matrix.

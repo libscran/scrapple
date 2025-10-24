@@ -12,7 +12,9 @@
 #' @param block,mode Arguments passed to \code{\link[scrapper]{centerSizeFactors}}.
 #' @param log,pseudo.count Arguments passed to \code{\link[scrapper]{normalizeCounts}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} with the count matrix.
-#' @param output.nme String containing the name of the assay to store the normalized matrix.
+#' @param output.name String containing the name of the assay to store the normalized matrix.
+#' @param factor.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the size factors in the output object.
+#' If \code{NULL}, the size factors are not stored. 
 #'
 #' @return \code{x} is returned with a new assay containing the (log-)normalized matrix.
 #' Size factors are also stored in the \code{\link[SummarizedExperiment]{colData}}.
@@ -32,7 +34,18 @@
 #' @importFrom SummarizedExperiment assay assay<-
 #' @importFrom BiocGenerics sizeFactors<-
 #' @importFrom Matrix colSums
-normalizeRnaCounts.se <- function(x, size.factors=NULL, center=TRUE, block=NULL, mode="lowest", log=TRUE, pseudo.count=1, assay.type="counts", output.name="logcounts") {
+normalizeRnaCounts.se <- function(
+    x,
+    size.factors = NULL,
+    center = TRUE,
+    block = NULL,
+    mode = "lowest",
+    log = TRUE,
+    pseudo.count = 1,
+    assay.type = "counts",
+    output.name = "logcounts",
+    factor.name = "sizeFactor"
+) {
     y <- assay(x, assay.type)
 
     if (is.null(size.factors)) {
@@ -42,7 +55,10 @@ normalizeRnaCounts.se <- function(x, size.factors=NULL, center=TRUE, block=NULL,
         size.factors <- scrapper::centerSizeFactors(size.factors, block=block, mode=mode)
     }
 
-    sizeFactors(x) <- size.factors
     assay(x, output.name) <- scrapper::normalizeCounts(y, size.factors=size.factors, log=log, pseudo.count=pseudo.count)
+    if (!is.null(factor.name)) {
+        colData(x)[[factor.name]] <- size.factors
+    }
+
     x
 }

@@ -71,7 +71,7 @@ clusterGraph.se <- function(
 #' @importFrom S4Vectors metadata metadata<-
 .add_build_graph_results <- function(x, graph, graph.name) {
     if (!is.null(graph.name)) {
-        metadata(x)[[graph.name]] <- graph.out
+        metadata(x)[[graph.name]] <- graph
     }
     x
 }

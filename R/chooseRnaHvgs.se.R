@@ -73,7 +73,7 @@ formatModelGeneVariancesResult <- function(model.res, choose.res = NULL, include
     if (include.per.block && !is.null(model.res$per.block)) {
         tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(df))
         for (n in names(model.res$per.block)) {
-            tmp[[sub]] <- DataFrame(model.res$per.block[[n]])
+            tmp[[n]] <- DataFrame(model.res$per.block[[n]])
         }
         df[["per.block"]] <- tmp
     }
