@@ -78,7 +78,7 @@ formatComputeAdtQcMetricsResult <- function(compute.res, flatten = TRUE) {
             df[[paste0(sub, ".sum")]] <- compute.res$subsets[[sub]]
         }
     } else {
-        tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(cd))
+        tmp <- S4Vectors::make_zero_col_DFrame(nrow=nrow(df))
         for (sub in names(compute.res$subsets)) {
             tmp[[sub]] <- compute.res$subsets[[sub]]
         }

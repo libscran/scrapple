@@ -149,12 +149,3 @@ formatComputeRnaQcMetricsResult <- function(compute.res, flatten = TRUE) {
 
     df
 }
-
-.choose_altexp_names <- function(altexp.proportions) {
-    altexp.names <- names(altexp.proportions)
-    if (is.null(altexp.names)) {
-        altexp.proportions
-    } else {
-        altexp.names
-    }
-}
