@@ -43,7 +43,7 @@ scoreGeneSet.se <- function(
 
     names(out$scores) <- colnames(x)
     w <- out$weights$weight
-    names(w) <- rownames(x)[out$rows]
+    names(w) <- rownames(x)[out$weights$row]
     out$weights <- w
 
     out

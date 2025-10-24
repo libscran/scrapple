@@ -60,7 +60,7 @@ scoreMarkers.se <- function(
         more.marker.args
     )
 
-    if (!is.character(extra.columns)) {
+    if (is.character(extra.columns)) {
         extra.columns <- rowData(x)[,extra.columns,drop=FALSE]
     }
     formatScoreMarkersResult(res, extra.columns=extra.columns, order.by=order.by)
@@ -70,13 +70,13 @@ scoreMarkers.se <- function(
     for (n in names(marker.res)) {
         current <- marker.res[[n]]
         if (is.matrix(current)) {
-            return(list(nrow(current), rownames(current), colnames(current)))
+            return(list(nrow=nrow(current), rownames=rownames(current), groups=colnames(current)))
         } else if (is.data.frame(current)) {
-            return(list(nrow(current), rownames(current), NULL))
+            return(list(nrow=nrow(current), rownames=rownames(current), groups=NULL))
         } else if (is.list(current)) {
-            out <- .guess_row_stats(current)
+            out <- .guess_dimnames(current)
             if (!is.null(out)) {
-                out[[3]] <- names(current)
+                out$groups <- names(current)
                 return(out)
             }
         } else {
@@ -118,9 +118,9 @@ formatScoreMarkersResult <- function(marker.res, extra.columns = NULL, order.by 
     }
 
     output <- List()
-    for (group in out[[3]]) {
-        current <- make_zero_col_DFrame(out[[1]])
-        rownames(current) <- out[[2]]
+    for (group in out$groups) {
+        current <- make_zero_col_DFrame(out$nrow)
+        rownames(current) <- out$rownames
         if (!is.null(extra.columns)) {
             current <- cbind(current, extra.columns)
         }

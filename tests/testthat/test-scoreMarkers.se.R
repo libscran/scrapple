@@ -1,0 +1,78 @@
+# library(testthat); library(scrapple); source("test-scoreMarkers.se.R")
+
+test_that("guessing the dimnames works as expected", {
+    mat <- matrix(0, 200, 10)
+    rownames(mat) <- sprintf("foo%s", seq_len(nrow(mat)))
+    colnames(mat) <- LETTERS[1:10]
+
+    # Works on a matrix.
+    out <- scrapple:::.guess_dimnames(list(stuff=mat))
+    expect_identical(out$nrow, 200L)
+    expect_identical(out$rownames, rownames(mat))
+    expect_identical(out$groups, LETTERS[1:10])
+
+    # Works for a list of effect sizes.
+    effects <- lapply(1:10, function(x) data.frame(X=seq_len(200), row.names=rownames(mat)))
+    names(effects) <- LETTERS[1:10]
+    out2 <- scrapple:::.guess_dimnames(list(cohens.d=effects))
+    expect_identical(out, out2)
+})
+
+test_that("finding an ordering statistic works as expected", {
+    expect_identical(scrapple:::.find_order_by(data.frame(cohens.d.mean=1, auc.max=2), TRUE), "cohens.d.mean")
+    expect_identical(scrapple:::.find_order_by(data.frame(cohens.d.max=1, auc.median=2), TRUE), "auc.median")
+    expect_null(scrapple:::.find_order_by(data.frame(cohens.d.max=1, auc.median=2), FALSE))
+    expect_null(scrapple:::.find_order_by(data.frame(cohens.d.max=1, auc.median=2), NULL))
+    expect_null(scrapple:::.find_order_by(data.frame(stuff=2), TRUE))
+    expect_identical(scrapple:::.find_order_by(data.frame(cohens.d.max=1, auc.median=2), "foobar"), "foobar")
+})
+
+set.seed(6900)
+library(SummarizedExperiment)
+mat <- matrix(rpois(1000, 10), ncol=20)
+rownames(mat) <- sprintf("gene%s", seq_len(nrow(mat)))
+se <- SummarizedExperiment(list(counts=mat))
+se <- normalizeRnaCounts.se(se)
+
+test_that("scoreMarkers.se works as expected", {
+    groups <- rep(LETTERS[1:4], 5)
+    out <- scoreMarkers.se(se, groups)
+    expect_identical(names(out), LETTERS[1:4])
+
+    for (g in LETTERS[1:4]) {
+        df <- out[[g]]
+        expect_identical(nrow(df), nrow(se))
+        expect_true(all(rownames(mat) %in% rownames(df)))
+
+        expect_type(df$cohens.d.mean, "double")
+        expect_type(df$auc.median, "double")
+        expect_type(df$delta.mean.min.rank, "integer")
+        expect_type(df$mean, "double")
+        expect_type(df$detected, "double")
+
+        expect_false(is.unsorted(-df$cohens.d.mean)) # i.e., the default order-by choice.
+    }
+
+    # Works with extra columns.
+    rowData(se)$symbol <- sprintf("SYMBOL-%s", seq_len(nrow(mat)))
+    out <- scoreMarkers.se(se, groups, extra.columns="symbol")
+    for (g in LETTERS[1:4]) {
+        df <- out[[g]]
+        expect_identical(df$symbol, rowData(se)$symbol[match(rownames(df), rownames(se))])
+    }
+
+    # Behaves sensibly when we strip away all other metrics.
+    out <- scoreMarkers.se(se, groups, more.marker.args=list(compute.group.mean=FALSE, compute.group.detected=FALSE, compute.cohens.d=FALSE))
+    for (g in LETTERS[1:4]) {
+        df <- out[[g]]
+        expect_identical(nrow(df), nrow(se))
+        expect_true(all(rownames(mat) %in% rownames(df)))
+
+        expect_null(df$cohens.d.mean)
+        expect_null(df$mean)
+        expect_null(df$detected)
+        expect_type(df$auc.mean, "double")
+
+        expect_false(is.unsorted(-df$auc.mean)) # i.e., the next default order-by choice.
+    }
+})
