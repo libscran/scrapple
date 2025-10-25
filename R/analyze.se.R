@@ -84,7 +84,7 @@
 #' @param more.neighbor.args Named list of arguments to pass to \code{\link{runAllNeighborSteps.se}}.
 #' @param kmeans.clusters Passed to \code{\link{clusterKmeans.se}} as the \code{k} argument.
 #' If \code{NULL}, k-means clustering is not performed.
-#' @param kmeans.cluster.output.name Passed to \code{\link{clusterKmeans.se}} as the \code{output.name} argument.
+#' @param kmeans.clusters.output.name Passed to \code{\link{clusterKmeans.se}} as the \code{output.name} argument.
 #' Ignored if \code{kmeans.clusters = NULL}.
 #' @param more.kmeans.args Named list of arguments to pass to \code{\link{clusterKmeans.se}}.
 #' Ignored if \code{kmeans.clusters = NULL}.
@@ -106,7 +106,7 @@
 #' \itemize{
 #' \item Running \code{\link{quickRnaQc.se}}, \code{\link{quickAdtQc.se}} and/or \code{\link{quickCrisprQc.se}}, for quality control.
 #' \item Subsetting \code{x} to only retain the high-quality cells in all modalities, based on \code{filter.cells}.
-#' \item Running \code{\link{normalizeRnaCounts.se}}, \code{\link{normalizeAdtCounts.se}} and/or \code{\link{normalizeCrisprCounts.set}}, for normalization.
+#' \item Running \code{\link{normalizeRnaCounts.se}}, \code{\link{normalizeAdtCounts.se}} and/or \code{\link{normalizeCrisprCounts.se}}, for normalization.
 #' \item Running \code{\link{chooseRnaHvgs.se}} to identify highly variable genes.
 #' \item Running \code{\link{runPca.se}} on the RNA and/or ADT data.
 #' \item Running \code{\link{scaleByNeighbors.se}} if multiple modalities are present.
@@ -176,7 +176,7 @@ analyze.se <- function(
     more.cluster.graph.args = list(),
     more.neighbor.args = list(),
     kmeans.clusters = NULL,
-    kmeans.output.name = "kmeans.cluster",
+    kmeans.clusters.output.name = "kmeans.cluster",
     more.kmeans.args = list(),
     clusters.for.markers = c("graph", "kmeans"),
     more.rna.marker.args = list(),
@@ -404,7 +404,7 @@ analyze.se <- function(
     if (!is.null(kmeans.clusters)) {
         x <- .call(
             clusterKmeans.se,
-            list(x, reddim.type=target.embedding, output.name=kmeans.output.name),
+            list(x, reddim.type=target.embedding, output.name=kmeans.clusters.output.name),
             list(k=kmeans.clusters, num.threads=num.threads),
             more.kmeans.args
         )
@@ -416,7 +416,7 @@ analyze.se <- function(
         if (c == "graph") {
             candidate <- colData(x)[[cluster.graph.output.name]]
         } else if (c == "kmeans") {
-            candidate <- colData(x)[[kmeans.output.name]]
+            candidate <- colData(x)[[kmeans.clusters.output.name]]
         }
         if (!is.null(candidate)) {
             chosen.clusters <- candidate

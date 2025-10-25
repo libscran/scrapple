@@ -37,7 +37,7 @@ Rows correspond to genes and columns correspond to cells.}
 \item{counts.name}{String containing the name of the \code{\link[SummarizedExperiment]{colData}} column containing the cell count for each factor combination.
 If \code{NULL}, the cell counts are not reported.}
 
-\item{meta.name}{String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry containing additional outputs like the combination indices.
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the combination indices.
 If \code{NULL}, additional outputs are not reported.}
 
 \item{include.coldata}{Logical scalar indicating whether to add the aggregated \code{colData} from \code{x} to the output.}

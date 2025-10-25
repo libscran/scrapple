@@ -4,11 +4,11 @@
 #'
 #' @param x A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 #' Rows correspond to genomic features and columns correspond to cells.
-#' @param k Arguments to be passed to \code{\link[scrapper]{runKmeans}}.
-#' @param more.kmeans.args Named list of further arguments to be passed to \code{\link[scrapper]{runKmeans}}.
+#' @param k Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
+#' @param more.kmeans.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
 #' @param output.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the cluster assignments.
-#' @param meta.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store extra clustering output.
+#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 #' If \code{NULL}, no extra clustering output is stored. 
 #'
 #' @return \code{x} is returned with the cluster assignment for each cell stored in the \code{colData}.

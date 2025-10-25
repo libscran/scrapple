@@ -2,6 +2,7 @@
 % Please edit documentation in R/scoreMarkers.se.R
 \name{scoreMarkers.se}
 \alias{scoreMarkers.se}
+\alias{formatScoreMarkersResult}
 \alias{previewMarkers}
 \title{Score marker genes}
 \usage{
@@ -15,6 +16,8 @@ scoreMarkers.se(
   extra.columns = NULL,
   order.by = TRUE
 )
+
+formatScoreMarkersResult(marker.res, extra.columns = NULL, order.by = TRUE)
 
 previewMarkers(
   marker.df,
@@ -42,6 +45,8 @@ For \code{scoreMarkers.se}, this may also be a character vector specifying the c
 If \code{TRUE}, a column is automatically chosen from the effect size summaries.
 If \code{NULL} or \code{FALSE}, no ordering is performed.}
 
+\item{marker.res}{List containing the result of \code{\link[scrapper]{scoreMarkers}}.}
+
 \item{marker.df}{DataFrame containing the marker statistics for a single group.}
 
 \item{columns, default.columns}{Character vector of the columns to retain in the preview.
@@ -49,8 +54,6 @@ This may be named, in which the names are used as the column names.}
 
 \item{rows}{Integer specifying the number of rows to show.
 If \code{NULL}, all rows are returned.}
-
-\item{marker.res}{List containing the result of \code{\link[scrapper]{scoreMarkers}}.}
 }
 \value{
 For \code{scoreMarkers.se} and \code{formatScoreMarkersResult}, a \link[S4Vectors]{List} of \link[S4Vectors]{DataFrame}s is returned.

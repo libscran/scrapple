@@ -96,6 +96,7 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca", "clust
 
 #' @export
 #' @rdname getTestData.se
+#' @importFrom methods as
 getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
     at <- match.arg(at)
 

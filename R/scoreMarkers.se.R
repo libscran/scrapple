@@ -108,6 +108,7 @@ scoreMarkers.se <- function(
 
 #' @export
 #' @importFrom S4Vectors DataFrame List
+#' @rdname scoreMarkers.se
 formatScoreMarkersResult <- function(marker.res, extra.columns = NULL, order.by = TRUE) {
     effect.sizes <- c("cohens.d", "auc", "delta.mean", "delta.detected")
     summaries <- c("min", "mean", "median", "max", "min.rank")

@@ -9,7 +9,7 @@
 #' Each entry is named after an alternative experiment.
 #' Each vector contains the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} embeddings from that experiment to be combined.
 #' @param main.reddims Character or integer vector specifying the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} entries from \code{x} to be combined.
-#' @param num.neighbors,num.threads Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
+#' @param num.neighbors,BNPARAM,num.threads Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
 #' @param more.scale.args Named list of additional arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the combined embeddings.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional metrics.
@@ -31,7 +31,7 @@
 #' \code{\link{scaleByNeighbors}} from the \pkg{scrapper} package.
 #'
 #' @export
-#' @importFrom SingleCellExperiment altExp altExpNames reducedDim reducedDimNames mainExpName reducedDim<-
+#' @importFrom SingleCellExperiment altExp altExpNames reducedDim reducedDimNames reducedDim<-
 #' @importFrom S4Vectors metadata metadata<-
 #' @importFrom BiocNeighbors AnnoyParam
 scaleByNeighbors.se <- function(

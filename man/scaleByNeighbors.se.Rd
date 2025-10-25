@@ -27,7 +27,7 @@ Each vector contains the names/indices of the \code{\link[SingleCellExperiment]{
 
 \item{main.reddims}{Character or integer vector specifying the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} entries from \code{x} to be combined.}
 
-\item{num.neighbors, num.threads}{Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
+\item{num.neighbors, BNPARAM, num.threads}{Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
 
 \item{more.scale.args}{Named list of additional arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
 

@@ -2,6 +2,7 @@
 % Please edit documentation in R/quickRnaQc.se.R
 \name{quickRnaQc.se}
 \alias{quickRnaQc.se}
+\alias{computeRnaQcMetricsWithAltExps}
 \alias{formatComputeRnaQcMetricsResult}
 \title{Quick quality control for RNA data}
 \usage{
@@ -16,6 +17,14 @@ quickRnaQc.se(
   output.prefix = NULL,
   meta.name = "qc",
   flatten = TRUE
+)
+
+computeRnaQcMetricsWithAltExps(
+  x,
+  subsets,
+  altexp.proportions,
+  num.threads = 1,
+  assay.type = "counts"
 )
 
 formatComputeRnaQcMetricsResult(compute.res, flatten = TRUE)

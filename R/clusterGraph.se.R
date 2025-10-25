@@ -12,9 +12,9 @@
 #' @param more.cluster.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
 #' @param output.name String containing the name of the column of the \code{\link[SummarizedExperiment]{colData}} in which to store the cluster assignments.
-#' @param meta.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store extra clustering output.
+#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 #' If \code{NULL}, no extra clustering output is stored. 
-#' @param graph.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store the SNN graph.
+#' @param graph.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store the SNN graph.
 #' If \code{NULL}, the SNN graph is not stored. 
 #'
 #' @return \code{x} is returned with the cluster assignment for each cell stored in the \code{colData}.

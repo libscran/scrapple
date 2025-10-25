@@ -17,15 +17,15 @@ clusterKmeans.se(
 \item{x}{A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 Rows correspond to genomic features and columns correspond to cells.}
 
-\item{k}{Arguments to be passed to \code{\link[scrapper]{runKmeans}}.}
+\item{k}{Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.}
 
-\item{more.kmeans.args}{Named list of further arguments to be passed to \code{\link[scrapper]{runKmeans}}.}
+\item{more.kmeans.args}{Named list of further arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.}
 
 \item{reddim.type}{Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.}
 
 \item{output.name}{String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the cluster assignments.}
 
-\item{meta.name}{String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store extra clustering output.
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 If \code{NULL}, no extra clustering output is stored.}
 }
 \value{

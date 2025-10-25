@@ -1,7 +1,7 @@
 Package: scrapple
 Version: 0.99.0
 Date: 2025-10-09
-Title: User-Friendly Functions for Single-cell RNA-seq Analysis
+Title: User-Friendly Functions for Single-Cell RNA-Seq Analysis
 Description: 
     Implements user-friendly wrappers to the low-level utilities from the scrapper package.
     The wrapper functions provide interoperability with SummarizedExperiment objects and more convenient formatting of results.
@@ -19,6 +19,7 @@ Imports:
     Matrix,
     BiocGenerics,
     IRanges,
+    DelayedArray,
     BiocNeighbors,
     scrapper
 Suggests:
@@ -26,7 +27,8 @@ Suggests:
     BiocStyle,
     knitr,
     rmarkdown,
-    scRNAseq
+    scRNAseq,
+    org.Mm.eg.db
 biocViews: 
     Normalization, 
     RNASeq, 

@@ -10,7 +10,7 @@
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the factor combinations.
 #' @param counts.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column containing the cell count for each factor combination.
 #' If \code{NULL}, the cell counts are not reported.
-#' @param meta.name String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry containing additional outputs like the combination indices.
+#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the combination indices.
 #' If \code{NULL}, additional outputs are not reported.
 #' @param include.coldata Logical scalar indicating whether to add the aggregated \code{colData} from \code{x} to the output.
 #' @param more.coldata.args Named list of additional arguments to pass to \code{aggregateColData}.
@@ -75,7 +75,7 @@
 #' @importFrom methods is
 #' @importClassesFrom S4Vectors List
 #' @importFrom SummarizedExperiment SummarizedExperiment colData rowData colData<- metadata<-
-#' @importFrom SingleCellExperiment SingleCellExperiment altExpNames altExp<- altExp mainExpName
+#' @importFrom SingleCellExperiment SingleCellExperiment altExpNames altExp<- altExp mainExpName mainExpName<-
 aggregateAcrossCells.se <- function(
     x,
     factors,

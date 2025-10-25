@@ -35,10 +35,10 @@ For \code{resolution}, this is either passed to \code{multilevel.resolution} or 
 
 \item{output.name}{String containing the name of the column of the \code{\link[SummarizedExperiment]{colData}} in which to store the cluster assignments.}
 
-\item{meta.name}{String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store extra clustering output.
+\item{meta.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 If \code{NULL}, no extra clustering output is stored.}
 
-\item{graph.name}{String containing the name of the \code{\link[SummarizedExperiment]{metadata}} entry in which to store the SNN graph.
+\item{graph.name}{String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store the SNN graph.
 If \code{NULL}, the SNN graph is not stored.}
 }
 \value{

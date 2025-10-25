@@ -23,14 +23,14 @@ test_that("aggregateAcrossCells.se works as expected", {
 
     # Works if we provide a list.
     out3 <- aggregateAcrossCells.se(se, list(foo=se$stuff), output.prefix=NULL)
-    expect_identical(out2$foo, out2$stuff)
-    expect_identical(assay(out2), assay(out))
+    expect_identical(out3$foo, out$stuff)
+    expect_identical(assay(out3), assay(out))
 
     # Works with multiple factors.
     mult <- aggregateAcrossCells.se(se, colData(se)[,c("stuff", "whee"),drop=FALSE])
     expect_identical(mult$factor.stuff, mult$stuff)
     expect_identical(mult$factor.whee, mult$whee)
-    counters <- match(colData(se)[,c("stuff", "whee"),drop=FALSE], colData(mult)[,c("stuff", "whee"),drop=FALSE])
+    counters <- S4Vectors::match(colData(se)[,c("stuff", "whee"),drop=FALSE], colData(mult)[,c("stuff", "whee"),drop=FALSE])
     expect_identical(as.integer(table(counters)), mult$counts)
     expect_identical(metadata(mult)$aggregated$index, counters)
 

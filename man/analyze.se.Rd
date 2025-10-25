@@ -47,7 +47,7 @@ analyze.se(
   more.cluster.graph.args = list(),
   more.neighbor.args = list(),
   kmeans.clusters = NULL,
-  kmeans.output.name = "kmeans.cluster",
+  kmeans.clusters.output.name = "kmeans.cluster",
   more.kmeans.args = list(),
   clusters.for.markers = c("graph", "kmeans"),
   more.rna.marker.args = list(),
@@ -181,6 +181,9 @@ Only used if \code{block} is supplied.}
 \item{kmeans.clusters}{Passed to \code{\link{clusterKmeans.se}} as the \code{k} argument.
 If \code{NULL}, k-means clustering is not performed.}
 
+\item{kmeans.clusters.output.name}{Passed to \code{\link{clusterKmeans.se}} as the \code{output.name} argument.
+Ignored if \code{kmeans.clusters = NULL}.}
+
 \item{more.kmeans.args}{Named list of arguments to pass to \code{\link{clusterKmeans.se}}.
 Ignored if \code{kmeans.clusters = NULL}.}
 
@@ -199,9 +202,6 @@ Ignored if no suitable clusterings are available or if \code{crispr.altexp=NULL}
 \item{BNPARAM}{A \link[BiocNeighbors]{BiocNeighborParam} instance specifying the nearest-neighbor search algorithm to use.}
 
 \item{num.threads}{Integer scalar specifying the number of threads to use in each step.}
-
-\item{kmeans.cluster.output.name}{Passed to \code{\link{clusterKmeans.se}} as the \code{output.name} argument.
-Ignored if \code{kmeans.clusters = NULL}.}
 }
 \value{
 \code{x} is returned with the results of the analysis.
@@ -215,7 +215,7 @@ This function is equivalent to:
 \itemize{
 \item Running \code{\link{quickRnaQc.se}}, \code{\link{quickAdtQc.se}} and/or \code{\link{quickCrisprQc.se}}, for quality control.
 \item Subsetting \code{x} to only retain the high-quality cells in all modalities, based on \code{filter.cells}.
-\item Running \code{\link{normalizeRnaCounts.se}}, \code{\link{normalizeAdtCounts.se}} and/or \code{\link{normalizeCrisprCounts.set}}, for normalization.
+\item Running \code{\link{normalizeRnaCounts.se}}, \code{\link{normalizeAdtCounts.se}} and/or \code{\link{normalizeCrisprCounts.se}}, for normalization.
 \item Running \code{\link{chooseRnaHvgs.se}} to identify highly variable genes.
 \item Running \code{\link{runPca.se}} on the RNA and/or ADT data.
 \item Running \code{\link{scaleByNeighbors.se}} if multiple modalities are present.

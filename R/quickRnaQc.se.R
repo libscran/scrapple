@@ -111,6 +111,7 @@ quickRnaQc.se <- function(
 #' @export
 #' @importFrom SummarizedExperiment assay
 #' @importFrom SingleCellExperiment altExp
+#' @rdname quickRnaQc.se
 computeRnaQcMetricsWithAltExps <- function(x, subsets, altexp.proportions, num.threads = 1, assay.type = "counts") {
     metrics <- scrapper::computeRnaQcMetrics(assay(x, assay.type, withDimnames=FALSE), subsets, num.threads=num.threads)
 

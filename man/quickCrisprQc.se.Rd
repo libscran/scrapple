@@ -33,9 +33,6 @@ Rows correspond to CRISPR guides and columns correspond to cells.}
 If \code{NULL}, additional outputs are not reported.}
 
 \item{compute.res}{List returned by \code{\link[scrapper]{computeCrisprQcMetrics}}.}
-
-\item{flatten}{Logical scalar indicating whether to flatten the subset proportions into separate columns of the \code{link[SummarizedExperiment]{colData}}.
-If \code{FALSE}, the subset proportions are stored in a nested \link[S4Vectors]{DataFrame}.}
 }
 \value{
 For \code{quickCrisprQc.se}, \code{x} is returned with additional columns added to its \code{\link[SummarizedExperiment]{colData}}.
