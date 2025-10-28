@@ -13,6 +13,7 @@ analyze.se(
   adt.assay.type = "counts",
   crispr.assay.type = "counts",
   block = NULL,
+  block.name = "block",
   rna.qc.subsets = list(),
   rna.qc.output.prefix = NULL,
   more.rna.qc.args = list(),
@@ -84,6 +85,10 @@ Only used if \code{crispr.altexp} is not \code{NULL}.}
 
 \item{block}{Vector or factor specifying the block of origin (e.g., batch, sample) for each cell in \code{x}.
 Alternatively \code{NULL}, if all cells are from the same block.}
+
+\item{block.name}{String specifying the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the blocking factor.
+Only used if \code{block} is not \code{NULL}.
+If \code{NULL}, the blocking factor is not stored in the \code{colData}.}
 
 \item{rna.qc.subsets}{Passed to \code{\link{quickRnaQc.se}} as the \code{subsets} argument.
 Only used if \code{rna.altexp} is not \code{NULL}.}

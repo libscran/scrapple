@@ -22,6 +22,9 @@
 #' Only used if \code{crispr.altexp} is not \code{NULL}.
 #' @param block Vector or factor specifying the block of origin (e.g., batch, sample) for each cell in \code{x}.
 #' Alternatively \code{NULL}, if all cells are from the same block.
+#' @param block.name String specifying the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the blocking factor.
+#' Only used if \code{block} is not \code{NULL}.
+#' If \code{NULL}, the blocking factor is not stored in the \code{colData}.
 #' @param rna.qc.subsets Passed to \code{\link{quickRnaQc.se}} as the \code{subsets} argument.
 #' Only used if \code{rna.altexp} is not \code{NULL}.
 #' @param rna.qc.output.prefix Passed to \code{\link{quickRnaQc.se}} as the \code{output.prefix} argument.
@@ -142,6 +145,7 @@ analyze.se <- function(
     adt.assay.type = "counts",
     crispr.assay.type = "counts",
     block = NULL,
+    block.name = "block",
     rna.qc.subsets = list(),
     rna.qc.output.prefix = NULL,
     more.rna.qc.args = list(),
@@ -196,7 +200,7 @@ analyze.se <- function(
         tmp <- .call(
             quickRnaQc.se, 
             list(tmp, output.prefix=rna.qc.output.prefix),
-            list(subsets=rna.qc.subsets, num.threads=num.threads, assay.type=rna.assay.type),
+            list(subsets=rna.qc.subsets, block=block, num.threads=num.threads, assay.type=rna.assay.type),
             more.rna.qc.args
         )
         collected.filters$rna <- .extract_or_error(colData(tmp), paste0(rna.qc.output.prefix, "keep"))
@@ -208,7 +212,7 @@ analyze.se <- function(
         tmp <- .call(
             quickAdtQc.se,
             list(tmp, output.prefix=adt.qc.output.prefix),
-            list(subsets=adt.qc.subsets, num.threads=num.threads, assay.type=adt.assay.type),
+            list(subsets=adt.qc.subsets, block=block, num.threads=num.threads, assay.type=adt.assay.type),
             more.adt.qc.args
         )
         collected.filters$adt <- .extract_or_error(colData(tmp), paste0(adt.qc.output.prefix, "keep"))
@@ -220,7 +224,7 @@ analyze.se <- function(
         tmp <- .call(
             quickCrisprQc.se, 
             list(tmp, output.prefix=crispr.qc.output.prefix),
-            list(num.threads=num.threads, assay.type=crispr.assay.type),
+            list(num.threads=num.threads, block=block, assay.type=crispr.assay.type),
             more.crispr.qc.args
         )
         collected.filters$crispr <- .extract_or_error(colData(tmp), paste0(crispr.qc.output.prefix, "keep"))
@@ -235,7 +239,9 @@ analyze.se <- function(
             combined.qc.filter <- combined.qc.filter & keep
         }
     }
-    colData(x)[["combined.keep"]] <- combined.qc.filter
+    if (length(collected.filters) > 1) {
+        colData(x)[["combined.keep"]] <- combined.qc.filter
+    }
 
     if (filter.cells) {
         x <- .delayify_assays(x)
@@ -260,14 +266,14 @@ analyze.se <- function(
     }
 
     if (!is.null(adt.altexp)) {
-        tmp <- .get_modality(x, rna.altexp)
+        tmp <- .get_modality(x, adt.altexp)
         tmp <- .call(
             normalizeAdtCounts.se, 
             list(tmp, assay.type=adt.assay.type, output.name=adt.norm.output.name),
             list(block=block),
             more.adt.norm.args
         )
-        .assign_modality(x, rna.altexp, tmp, env=environment())
+        .assign_modality(x, adt.altexp, tmp, env=environment())
     }
 
     if (!is.null(crispr.altexp)) {
@@ -380,6 +386,10 @@ analyze.se <- function(
             more.mnn.args
         )
         target.embedding <- mnn.output.name
+
+        if (!is.null(block.name)) {
+            colData(x)[[block.name]] <- block
+        }
     }
 
     ############ Assorted neighbor-related stuff ⸜(⸝⸝⸝´꒳`⸝⸝⸝)⸝ #############
@@ -413,12 +423,12 @@ analyze.se <- function(
     chosen.clusters <- NULL
     for (c in clusters.for.markers) {
         if (c == "graph") {
-            candidate <- colData(x)[[cluster.graph.output.name]]
+            name <- cluster.graph.output.name
         } else if (c == "kmeans") {
-            candidate <- colData(x)[[kmeans.clusters.output.name]]
+            name <- kmeans.clusters.output.name
         }
-        if (!is.null(candidate)) {
-            chosen.clusters <- candidate
+        if (!is.null(name) && name %in% colnames(colData(x))) {
+            chosen.clusters <- colData(x)[[name]]
             break
         }
     }
