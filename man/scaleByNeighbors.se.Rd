@@ -9,6 +9,7 @@ scaleByNeighbors.se(
   altexp.reddims,
   main.reddims = "PCA",
   num.neighbors = 20,
+  block = NULL,
   BNPARAM = AnnoyParam(),
   num.threads = 1,
   more.scale.args = list(),
@@ -27,7 +28,7 @@ Each vector contains the names/indices of the \code{\link[SingleCellExperiment]{
 
 \item{main.reddims}{Character or integer vector specifying the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} entries from \code{x} to be combined.}
 
-\item{num.neighbors, BNPARAM, num.threads}{Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
+\item{num.neighbors, block, BNPARAM, num.threads}{Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
 
 \item{more.scale.args}{Named list of additional arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.}
 

@@ -361,11 +361,10 @@ analyze.se <- function(
             }
         }
 
-        # TODO: support blocking with weighted average of distances.
         x <- .call(
             scaleByNeighbors.se,
             list(x, output.name=scale.output.name, main.reddims=main.reddims, altexp.reddims=altexp.reddims, delayed.transpose=TRUE),
-            list(num.threads=num.threads, BNPARAM=BNPARAM),
+            list(block=block, num.threads=num.threads, BNPARAM=BNPARAM),
             more.scale.args
         )
         target.embedding <- scale.output.name

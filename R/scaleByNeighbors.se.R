@@ -9,7 +9,7 @@
 #' Each entry is named after an alternative experiment.
 #' Each vector contains the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} embeddings from that experiment to be combined.
 #' @param main.reddims Character or integer vector specifying the names/indices of the \code{\link[SingleCellExperiment]{reducedDim}} entries from \code{x} to be combined.
-#' @param num.neighbors,BNPARAM,num.threads Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
+#' @param num.neighbors,block,BNPARAM,num.threads Arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
 #' @param more.scale.args Named list of additional arguments to pass to \code{\link[scrapper]{scaleByNeighbors}}.
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the combined embeddings.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional metrics.
@@ -39,6 +39,7 @@ scaleByNeighbors.se <- function(
     altexp.reddims,
     main.reddims = "PCA", 
     num.neighbors = 20,
+    block = NULL,
     BNPARAM = AnnoyParam(),
     num.threads = 1,
     more.scale.args = list(),
@@ -65,7 +66,7 @@ scaleByNeighbors.se <- function(
     out <- .call(
         scrapper::scaleByNeighbors,
         list(all.embeddings),
-        list(num.neighbors=num.neighbors, num.threads=num.threads, BNPARAM=BNPARAM),
+        list(num.neighbors=num.neighbors, block=block, num.threads=num.threads, BNPARAM=BNPARAM),
         more.scale.args
     )
 
