@@ -22,6 +22,8 @@
 #' @param BNPARAM,num.threads Arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.
 #' @param more.neighbor.args Named list of additional arguments to pass to \code{\link[scrapper]{runAllNeighborSteps}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform a nearest neighbor search.
+#' Alternatively, a named integer or character vector of length 1,
+#' where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.
 #'
 #' @return \code{x} is returned with additional coordinates stored in its \code{\link[SingleCellExperiment]{reducedDims}}
 #' and clustering output in its \code{\link[SummarizedExperiment]{colData}}.

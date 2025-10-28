@@ -23,7 +23,9 @@ Rows correspond to genomic features and columns correspond to cells.}
 
 \item{more.mnn.args}{Named list of additional arguments to pass to \code{\link[scrapper]{correctMnn}}.}
 
-\item{reddim.type}{String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.}
+\item{reddim.type}{String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.
+Alternatively, a named integer or character vector of length 1,
+where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.}
 
 \item{output.name}{String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the corrected embedding.}
 

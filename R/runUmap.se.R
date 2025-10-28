@@ -7,6 +7,8 @@
 #' @param num.dim,num.neighbors,min.dist,num.threads Arguments to pass to \code{\link[scrapper]{runUmap}}.
 #' @param more.umap.args Named list of further arguments to pass to \code{\link[scrapper]{runUmap}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
+#' Alternatively, a named integer or character vector of length 1,
+#' where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.
 #' @param output.name String containing the name of the output \code{\link[SingleCellExperiment]{reducedDim}}. 
 #'
 #' @return \code{x} is returned with the UMAP coordinates stored in the \code{reducedDim}.

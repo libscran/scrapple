@@ -7,6 +7,8 @@
 #' @param block,BNPARAM,num.threads Arguments passed to \code{\link[scrapper]{correctMnn}}.
 #' @param more.mnn.args Named list of additional arguments to pass to \code{\link[scrapper]{correctMnn}}.
 #' @param reddim.type String or integer specifying the \code{\link[SingleCellExperiment]{reducedDim}} entry on which to perform MNN correction.
+#' Alternatively, a named integer or character vector of length 1,
+#' where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.
 #' @param output.name String containing the name of the \code{\link[SingleCellExperiment]{reducedDim}} entry in which to store the corrected embedding.
 #' @param delayed.transpose Logical scalar indicating whether to delay the transposition when storing coordinates in the \code{\link[SingleCellExperiment]{reducedDims}}.
 #'

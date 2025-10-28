@@ -7,6 +7,8 @@
 #' @param k,num.threads Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
 #' @param more.kmeans.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
+#' Alternatively, a named integer or character vector of length 1,
+#' where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.
 #' @param output.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the cluster assignments.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 #' If \code{NULL}, no extra clustering output is stored. 

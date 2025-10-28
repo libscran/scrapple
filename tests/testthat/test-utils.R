@@ -30,35 +30,52 @@ test_that(".sanitize_altexp_assays works as expected", {
 
 library(DelayedArray)
 test_that(".add/get_transposed_reddim works as expected", {
-    sce <- SingleCellExperiment(list(counts=matrix(0, 10, 20)))
-
+    original <- SingleCellExperiment(list(counts=matrix(0, 10, 20)))
     rd <- matrix(runif(40), nrow=2)
-    sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=FALSE)
-    expect_identical(reducedDim(sce, "foo"), t(rd))
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), rd)
 
-    sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=TRUE)
-    expect_identical(reducedDim(sce, "foo"), t(DelayedArray(rd)))
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), rd)
+    {
+        sce <- original
 
-    # Checking that transposition does indeed give us back a no-op on the original matrix.
-    out <- t(reducedDim(sce, "foo"))
-    expect_s4_class(out, "DelayedMatrix")
-    expect_identical(out@seed, rd)
+        sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=FALSE)
+        expect_identical(reducedDim(sce, "foo"), t(rd))
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), rd)
 
-    # Works with other matrix types.
-    reducedDim(sce, "stuff") <- t(Matrix(rd))
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "stuff"), rd)
+        sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=TRUE)
+        expect_identical(reducedDim(sce, "foo"), t(DelayedArray(rd)))
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), rd)
+
+        # Checking that transposition does indeed give us back a no-op on the original matrix.
+        out <- t(reducedDim(sce, "foo"))
+        expect_s4_class(out, "DelayedMatrix")
+        expect_identical(out@seed, rd)
+
+        # Works with other matrix types.
+        reducedDim(sce, "stuff") <- t(Matrix(rd))
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "stuff"), rd)
+    }
 
     # Trying again, with names.
-    colnames(sce) <- LETTERS[1:20]
-    named.rd <- rd
-    colnames(named.rd) <- colnames(sce)
+    {
+        sce <- original
+        colnames(sce) <- LETTERS[1:20]
+        named.rd <- rd
+        colnames(named.rd) <- colnames(sce)
 
-    sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=FALSE)
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), named.rd)
-    sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=TRUE)
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), named.rd)
-    reducedDim(sce, "stuff") <- t(Matrix(rd))
-    expect_identical(scrapple:::.get_transposed_reddim(sce, "stuff"), named.rd)
+        sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=FALSE)
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), named.rd)
+
+        sce <- scrapple:::.add_transposed_reddim(sce, "foo", rd, delayed=TRUE)
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "foo"), named.rd)
+
+        reducedDim(sce, "stuff") <- t(Matrix(rd))
+        expect_identical(scrapple:::.get_transposed_reddim(sce, "stuff"), named.rd)
+    }
+
+    # Get transposition works for altexps.
+    {
+        sce <- original
+        rd2 <- matrix(runif(40), nrow=2)
+        altExp(sce, "ADT") <- SingleCellExperiment(list(counts=matrix(0, 0, 20)), reducedDims=list(PCA=t(rd2)))
+        expect_identical(scrapple:::.get_transposed_reddim(sce, c(ADT="PCA")), rd2)
+    }
 })

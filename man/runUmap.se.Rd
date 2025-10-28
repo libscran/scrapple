@@ -23,7 +23,9 @@ Rows correspond to genomic features and columns correspond to cells.}
 
 \item{more.umap.args}{Named list of further arguments to pass to \code{\link[scrapper]{runUmap}}.}
 
-\item{reddim.type}{Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.}
+\item{reddim.type}{Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
+Alternatively, a named integer or character vector of length 1,
+where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.}
 
 \item{output.name}{String containing the name of the output \code{\link[SingleCellExperiment]{reducedDim}}.}
 }

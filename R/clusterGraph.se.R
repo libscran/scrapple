@@ -11,6 +11,8 @@
 #' For \code{resolution}, this is either passed to \code{multilevel.resolution} or \code{leiden.resolution} depending on \code{method}.
 #' @param more.cluster.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterGraph}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
+#' Alternatively, a named integer or character vector of length 1,
+#' where the name specifies an alternative experiment of \code{x} and the value is the name/index of a \code{reducedDim} entry in that alternative experiment.
 #' @param output.name String containing the name of the column of the \code{\link[SummarizedExperiment]{colData}} in which to store the cluster assignments.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry in which to store extra clustering output.
 #' If \code{NULL}, no extra clustering output is stored. 

@@ -35,12 +35,17 @@
     x
 }
 
-#' @importFrom SingleCellExperiment reducedDim
 #' @importFrom Matrix t
-#' @importClassesFrom DelayedArray DelayedArray
 #' @importFrom methods is
+#' @importClassesFrom DelayedArray DelayedArray
+#' @importFrom SingleCellExperiment altExp reducedDim
 .get_transposed_reddim <- function(x, name) {
-    mat <- reducedDim(x, name, withDimnames=FALSE)
+    if (is.null(names(name))) {
+        mat <- reducedDim(x, name, withDimnames=FALSE)
+    } else {
+        mat <- reducedDim(altExp(x, names(name), withDimnames=FALSE), name, withDimnames=FALSE)
+    }
+
     mat <- t(mat)
 
     if (is.matrix(mat)) {
