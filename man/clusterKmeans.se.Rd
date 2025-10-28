@@ -7,6 +7,7 @@
 clusterKmeans.se(
   x,
   k,
+  num.threads = 1,
   more.kmeans.args = list(),
   reddim.type = "PCA",
   output.name = "clusters",
@@ -17,7 +18,7 @@ clusterKmeans.se(
 \item{x}{A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 Rows correspond to genomic features and columns correspond to cells.}
 
-\item{k}{Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.}
+\item{k, num.threads}{Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.}
 
 \item{more.kmeans.args}{Named list of further arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.}
 

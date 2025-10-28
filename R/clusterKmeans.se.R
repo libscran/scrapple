@@ -4,7 +4,7 @@
 #'
 #' @param x A \link[SingleCellExperiment]{SingleCellExperiment} object or one of its subclasses.
 #' Rows correspond to genomic features and columns correspond to cells.
-#' @param k Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
+#' @param k,num.threads Arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
 #' @param more.kmeans.args Named list of further arguments to be passed to \code{\link[scrapper]{clusterKmeans}}.
 #' @param reddim.type Integer or string specifying the existing embedding in the \code{\link[SingleCellExperiment]{reducedDim}} of \code{x}.
 #' @param output.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the cluster assignments.
@@ -27,11 +27,11 @@
 #' @importFrom SingleCellExperiment reducedDim
 #' @importFrom S4Vectors metadata metadata<-
 #' @importFrom SummarizedExperiment colData colData<-
-clusterKmeans.se <- function(x, k, more.kmeans.args = list(), reddim.type = "PCA", output.name = "clusters", meta.name = NULL) {
+clusterKmeans.se <- function(x, k, num.threads=1, more.kmeans.args = list(), reddim.type = "PCA", output.name = "clusters", meta.name = NULL) {
     clout <- .call(
         scrapper::clusterKmeans,
         list(.get_transposed_reddim(x, reddim.type)),
-        list(k=k),
+        list(k=k, num.threads=num.threads),
         more.kmeans.args
     )
 
