@@ -29,10 +29,12 @@
 #' \code{\link[scrapper]{runPca}} from the \pkg{scrapper} package.
 #'
 #' @export
+#' @importFrom methods is as
 #' @importFrom DelayedArray DelayedArray
 #' @importFrom SingleCellExperiment reducedDim<-
 #' @importFrom SummarizedExperiment assay
 #' @importFrom S4Vectors metadata metadata<-
+#' @importClassesFrom SingleCellExperiment SingleCellExperiment
 runPca.se <- function(
     x,
     features,
@@ -57,7 +59,11 @@ runPca.se <- function(
         more.pca.args
     )
 
+    if (!is(x, "SingleCellExperiment")) {
+        x <- as(x, "SingleCellExperiment")
+    }
     x <- .add_transposed_reddim(x, output.name, out$components, delayed.transpose)
+
     if (!is.null(meta.name)) {
         out$components <- NULL
         metadata(x)[[meta.name]] <- out

@@ -17,3 +17,10 @@ test_that("runPca.se works as expected", {
     no.meta <- runPca.se(sce, features=1:10, meta.name=NULL)
     expect_null(metadata(no.meta)$PCA)
 })
+
+test_that("runPca.se works with a basic SE", {
+    se <- SummarizedExperiment(list(logcounts=assay(sce)))
+    out <- runPca.se(se, features=5:100) 
+    expect_s4_class(out, "SingleCellExperiment")
+    expect_identical(reducedDimNames(out), "PCA")
+})
