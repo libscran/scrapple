@@ -97,6 +97,9 @@ getTestRnaData.se <- function(at = c("start", "qc", "norm", "hvg", "pca", "clust
 #' @export
 #' @rdname getTestData.se
 #' @importFrom methods as
+#' @importClassesFrom Matrix dgCMatrix
+#' @importFrom SummarizedExperiment assay assay<-
+#' @importFrom SingleCellExperiment altExp altExp<-
 getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
     at <- match.arg(at)
 
@@ -104,6 +107,7 @@ getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
         raw.sce <- scRNAseq::fetchDataset("kotliarov-pbmc-2020", "2024-04-18")
         raw.sce <- raw.sce[,1:5000] # Cutting it down a bit for speed.
         assay(raw.sce) <- as(assay(raw.sce), "dgCMatrix")
+        assay(altExp(raw.sce)) <- as(assay(altExp(raw.sce)), "dgCMatrix")
         cache$adt$start <- raw.sce
     }
     sce <- cache$adt$start
@@ -134,10 +138,10 @@ getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
 
     if (!("hvg" %in% names(cache$adt))) {
         sce <- chooseRnaHvgs.se(sce)
-        cache$adt$hvgs <- sce
+        cache$adt$hvg <- sce
     }
-    sce <- cache$adt$hvgs
-    if (at == "hvgs") {
+    sce <- cache$adt$hvg
+    if (at == "hvg") {
         return(sce)
     }
 
@@ -154,6 +158,10 @@ getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
 
 #' @export
 #' @rdname getTestData.se
+#' @importFrom methods as
+#' @importClassesFrom Matrix dgCMatrix
+#' @importFrom SummarizedExperiment assay assay<-
+#' @importFrom SingleCellExperiment altExp altExp<-
 getTestCrisprData.se <- function(at = c("start", "qc")) {
     at <- match.arg(at)
 
