@@ -1,0 +1,171 @@
+---
+title: Using scrapple to analyze single-cell data
+author: 
+- name: Aaron Lun
+  email: infinite.monkeys.with.keyboards@gmail.com
+date: "Revised: October 29, 2025"
+output:
+  BiocStyle::html_document
+package: scrapper
+vignette: >
+  %\VignetteIndexEntry{Analyzing single-cell data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}    
+---
+
+
+```{r, echo=FALSE, results="hide", message=FALSE}
+require(knitr)
+opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
+
+library(BiocStyle)
+self <- Biocpkg("scrapple")
+```
+
+# Overview
+
+`r self` implements user-friendly wrappers around the `r Biocpkg("scrapper")` functions for analyzing single-cell (RNA-seq) data.
+
+Each function performs an individual analysis step ranging from quality control to clustering and marker detection.
+`r self` is mostly intended for other Bioconductor package developers to build more user-friendly end-to-end workflows.
+
+# Quick start
+
+Let's fetch a small single-cell RNA-seq dataset for demonstration purposes:
+
+```{r}
+library(scRNAseq)
+sce.z <- ZeiselBrainData()
+sce.z
+```
+
+We run it through the `r self` analysis pipeline:
+
+```{r}
+library(scrapple)
+res <- analyze.se(
+    sce.z,
+
+    # Finding the mitochondrial genes for QC purposes.
+    rna.qc.subsets=list(mito=grep("^mt-", rownames(sce.z))),
+
+    # We can set the number of threads higher in real applications, but
+    # we want to avoid stressing out Bioconductor's build system.
+    num.threads=2
+)
+```
+
+Now we can have a look at some of the results.
+For example, we can make a t-SNE plot:
+
+```{r}
+library(scater)
+plotReducedDim(res$x, "TSNE", colour_by="graph.cluster")
+```
+
+We can also look at the markers defining each cluster:
+
+```{r}
+# Ordering by the median AUC across pairwise comparisons involving the cluster.
+previewMarkers(res$markers$rna[[1]], order.by="auc.median")
+```
+
+# Blocking on batches
+
+Let's fetch another brain dataset and combine it with the previous one.
+We'll consider each dataset to be a "batch" for the purposes of this demonstration.
+
+```{r}
+sce.t <- TasicBrainData()
+
+# Only using the common genes in both datasets.
+common <- intersect(rownames(sce.z), rownames(sce.t))
+combined <- combineCols(sce.t[common,], sce.z[common,])
+block <- rep(c("tasic", "zeisel"), c(ncol(sce.t), ncol(sce.z)))
+```
+
+We specify `block=` in our analysis to instruct the function to perform MNN correction:
+
+```{r}
+# No mitochondrial genes in the combined set, so we'll just skip it.
+blocked_res <- analyze.se(combined, block=block, num.threads=2)
+```
+
+Hopefully, the correction is able to get rid of the batch effect and merge the datasets together. 
+
+```{r}
+plotReducedDim(blocked_res$x, "TSNE", colour_by="block")
+```
+
+We can also check the distribution of clusters across batches.
+The presence of batch-specific clusters might indicate that the batch effect was not fully removed;
+or they might represent cell types that are unique to one of the studies, who knows.
+
+```{r}
+table(blocked_res$x$graph.cluster, blocked_res$x$block)
+```
+
+Finally, some markers for another cluster:
+
+```{r}
+previewMarkers(blocked_res$markers$rna[[1]])
+```
+
+# Combining protein data
+
+Let's fetch a CITE-seq dataset containing RNA counts in the main experiment and ADT counts in the alternative experiments.
+
+```{r}
+sce.s <- StoeckiusHashingData(mode=c("human", "adt1", "adt2"))
+
+# To keep the run-time short, we'll only consider the first 5000 cells.
+sce.s <- sce.s[,1:5000]
+
+# Combining the various ADT-related alternative experiments into a single object.
+altExp(sce.s, "all.adts") <- rbind(altExp(sce.s, "adt1"), altExp(sce.s, "adt2"))
+altExp(sce.s, "adt1") <- altExp(sce.s, "adt2") <- NULL
+
+sce.s
+```
+
+We specify `adt.altexp=` to indicate that one of the alternative experiments contains ADT data.
+This instructs the analysis to use data from both modalities during clustering and visualization.
+
+```{r}
+is.mito <- grepl("^MT-", rownames(sce.s))
+is.igg <- grepl("^IgG", rownames(altExp(sce.s, 'all.adts')))
+multi_res <- analyze.se(
+    sce.s,
+    adt.altexp="all.adts",
+    rna.qc.subsets=list(mito=is.mito),
+    adt.qc.subsets=list(igg=is.igg),
+    num.threads=2
+)
+```
+
+Here's an obligatory plot:
+
+```{r}
+plotReducedDim(multi_res$x, "UMAP", colour_by="graph.cluster")
+```
+
+We can inspect the top markers among the ADTs for a cluster:
+
+```{r}
+# By default, markers are sorted by the mean Cohen's d.
+# We just replace the column name when printing the dataframe here.
+previewMarkers(multi_res$markers$adt[[5]], c(effect="cohens.d.mean"))
+```
+
+... along with the RNA markers, as before.
+
+```{r}
+# Using the delta-detected to focus on silent-to-expressed genes.
+previewMarkers(multi_res$markers$rna[[5]], order.by="delta.detected.mean")
+```
+
+# Session information {-}
+
+```{r}
+sessionInfo()
+```

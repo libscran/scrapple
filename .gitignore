@@ -1,2 +1,4 @@
 *.swp
 *.html
+vignettes/*.html
+vignettes/*_files

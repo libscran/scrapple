@@ -27,7 +27,8 @@ Suggests:
     knitr,
     rmarkdown,
     scRNAseq,
-    org.Mm.eg.db
+    org.Mm.eg.db,
+    scater
 biocViews: 
     Normalization, 
     RNASeq, 
