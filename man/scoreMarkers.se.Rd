@@ -21,7 +21,7 @@ formatScoreMarkersResult(marker.res, extra.columns = NULL, order.by = TRUE)
 
 previewMarkers(
   marker.df,
-  columns,
+  columns = order.by,
   default.columns = c("mean", "detected", lfc = "delta.mean.mean"),
   rows = 10,
   order.by = NULL

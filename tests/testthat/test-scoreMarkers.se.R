@@ -33,9 +33,9 @@ mat <- matrix(rpois(1000, 10), ncol=20)
 rownames(mat) <- sprintf("gene%s", seq_len(nrow(mat)))
 se <- SummarizedExperiment(list(counts=mat))
 se <- normalizeRnaCounts.se(se)
+groups <- rep(LETTERS[1:4], 5)
 
 test_that("scoreMarkers.se works as expected", {
-    groups <- rep(LETTERS[1:4], 5)
     out <- scoreMarkers.se(se, groups)
     expect_identical(names(out), LETTERS[1:4])
 
@@ -52,16 +52,18 @@ test_that("scoreMarkers.se works as expected", {
 
         expect_false(is.unsorted(-df$cohens.d.mean)) # i.e., the default order-by choice.
     }
+})
 
-    # Works with extra columns.
+test_that("scoreMarkers.se works with extra columns", {
     rowData(se)$symbol <- sprintf("SYMBOL-%s", seq_len(nrow(mat)))
     out <- scoreMarkers.se(se, groups, extra.columns="symbol")
     for (g in LETTERS[1:4]) {
         df <- out[[g]]
         expect_identical(df$symbol, rowData(se)$symbol[match(rownames(df), rownames(se))])
     }
+})
 
-    # Behaves sensibly when we strip away all other metrics.
+test_that("scoreMarkers.se behaves without any metrics", {
     out <- scoreMarkers.se(se, groups, more.marker.args=list(compute.group.mean=FALSE, compute.group.detected=FALSE, compute.cohens.d=FALSE))
     for (g in LETTERS[1:4]) {
         df <- out[[g]]
@@ -75,4 +77,32 @@ test_that("scoreMarkers.se works as expected", {
 
         expect_false(is.unsorted(-df$auc.mean)) # i.e., the next default order-by choice.
     }
+})
+
+test_that("scoreMarkers.se sorts by min.rank correctly", {
+    out <- scoreMarkers.se(se, groups, order.by="cohens.d.min.rank")
+    for (g in LETTERS[1:4]) {
+        df <- out[[g]]
+        expect_false(is.unsorted(df$cohens.d.min.rank))
+    }
+})
+
+test_that("previewMarkers works as expected", {
+    out <- scoreMarkers.se(se, groups)
+
+    preview <- previewMarkers(out[[1]], NULL)
+    expect_identical(colnames(preview), c("mean", "detected", "lfc"))
+    expect_identical(nrow(preview), 10L)
+
+    preview <- previewMarkers(out[[1]], NULL, rows=NULL)
+    expect_identical(rownames(preview), rownames(out[[1]]))
+
+    preview <- previewMarkers(out[[1]], order.by="auc.median")
+    expect_identical(nrow(preview), 10L)
+
+    preview <- previewMarkers(out[[1]], order.by="auc.median", rows=NULL)
+    expect_identical(rownames(preview), rownames(out[[1]])[order(out[[1]]$auc.median, decreasing=TRUE)])
+
+    preview <- previewMarkers(out[[1]], order.by="auc.min.rank", rows=NULL)
+    expect_identical(rownames(preview), rownames(out[[1]])[order(out[[1]]$auc.min.rank)])
 })

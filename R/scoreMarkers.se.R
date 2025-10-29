@@ -146,7 +146,8 @@ formatScoreMarkersResult <- function(marker.res, extra.columns = NULL, order.by 
 
         order.by <- .find_order_by(current, order.by)
         if (!is.null(order.by)) {
-            current <- current[order(current[[order.by]], decreasing=TRUE),,drop=FALSE]
+            dec <- !endsWith(order.by, ".min.rank")
+            current <- current[order(current[[order.by]], decreasing=dec),,drop=FALSE]
         }
 
         output[[group]] <- current
@@ -158,7 +159,7 @@ formatScoreMarkersResult <- function(marker.res, extra.columns = NULL, order.by 
 #' @export
 #' @rdname scoreMarkers.se
 #' @importFrom utils head
-previewMarkers <- function(marker.df, columns, default.columns = c("mean", "detected", lfc="delta.mean.mean"), rows = 10, order.by = NULL) {
+previewMarkers <- function(marker.df, columns = order.by, default.columns = c("mean", "detected", lfc="delta.mean.mean"), rows = 10, order.by = NULL) {
     columns <- c(default.columns, columns)
     columns <- columns[columns %in% colnames(marker.df)]
     df <- marker.df[,columns,drop=FALSE]
@@ -169,7 +170,8 @@ previewMarkers <- function(marker.df, columns, default.columns = c("mean", "dete
 
     order.by <- .find_order_by(df, order.by)
     if (!is.null(order.by)) {
-        o <- order(df[[order.by]], decreasing=TRUE)
+        dec <- !endsWith(order.by, ".min.rank")
+        o <- order(df[[order.by]], decreasing=dec)
         if (!is.null(rows)) {
             o <- head(o, rows)
         }
