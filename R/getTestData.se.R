@@ -154,13 +154,29 @@ getTestAdtData.se <- function(at = c("start", "qc", "norm", "hvg", "pca")) {
 
 #' @export
 #' @rdname getTestData.se
-getTestCrisprData.se <- function(at = "start") {
+getTestCrisprData.se <- function(at = c("start", "qc")) {
     at <- match.arg(at)
 
     if (!("start" %in% names(cache$crispr))) {
-        cache$crispr$start <- scRNAseq::fetchDataset("cao-pancreas-2025", "2025-10-10", "rqc", realize.assays=TRUE)
+        raw.sce <- scRNAseq::fetchDataset("cao-pancreas-2025", "2025-10-10", "rqc")
+        raw.sce <- raw.sce[,1:5000] # Cutting it down a bit for speed.
+        assay(raw.sce) <- as(assay(raw.sce), "dgCMatrix")
+        assay(altExp(raw.sce)) <- as(assay(altExp(raw.sce)), "dgCMatrix")
+        cache$crispr$start <- raw.sce
     }
+    sce <- cache$crispr$start
     if (at == "start") {
         return(cache$crispr[[at]])
+    }
+
+    if (!("qc" %in% names(cache$crispr))) {
+        sce <- quickRnaQc.se(sce, subsets=list(mito=startsWith(rownames(sce), "MT-")))
+        altExp(sce, "CRISPR Guide Capture") <- quickCrisprQc.se(altExp(sce, "CRISPR Guide Capture"))
+        sce <- sce[,sce$keep & altExp(sce, "CRISPR Guide Capture")$keep]
+        cache$crispr$qc <- sce
+    }
+    sce <- cache$crispr$qc
+    if (at == "qc") {
+        return(sce)
     }
 }

@@ -11,7 +11,7 @@ getTestRnaData.se(at = c("start", "qc", "norm", "hvg", "pca", "cluster"))
 
 getTestAdtData.se(at = c("start", "qc", "norm", "hvg", "pca"))
 
-getTestCrisprData.se(at = "start")
+getTestCrisprData.se(at = c("start", "qc"))
 }
 \arguments{
 \item{at}{String specifying the level of processing.}
