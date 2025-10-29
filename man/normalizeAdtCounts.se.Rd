@@ -50,7 +50,7 @@ Size factors are also stored in the \code{\link[SummarizedExperiment]{colData}}.
 Compute (log-)normalized expression values after performing scaling normalization of an ADT count matrix.
 }
 \examples{
-sce <- getTestAdtData.se("qc")
+sce <- altExp(getTestAdtData.se("qc"), "ADT")
 sce <- normalizeAdtCounts.se(sce)
 assayNames(sce)
 summary(sizeFactors(sce))

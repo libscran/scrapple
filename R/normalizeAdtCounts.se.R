@@ -23,7 +23,7 @@
 #' @author Aaron Lun
 #'
 #' @examples
-#' sce <- getTestAdtData.se("qc")
+#' sce <- altExp(getTestAdtData.se("qc"), "ADT")
 #' sce <- normalizeAdtCounts.se(sce)
 #' assayNames(sce)
 #' summary(sizeFactors(sce))
@@ -34,8 +34,7 @@
 #' and \code{\link[scrapper]{normalizeCounts}}, from the \pkg{scrapper} package.
 #'
 #' @export
-#' @importFrom SummarizedExperiment assay assay<-
-#' @importFrom BiocGenerics sizeFactors<-
+#' @importFrom SummarizedExperiment assay assay<- colData colData<-
 normalizeAdtCounts.se <- function(
     x,
     size.factors = NULL,

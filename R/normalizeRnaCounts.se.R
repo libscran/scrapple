@@ -31,8 +31,7 @@
 #' \code{\link[scrapper]{centerSizeFactors}} and \code{\link[scrapper]{normalizeCounts}}, from the \pkg{scrapper} package.
 #'
 #' @export
-#' @importFrom SummarizedExperiment assay assay<-
-#' @importFrom BiocGenerics sizeFactors<-
+#' @importFrom SummarizedExperiment assay assay<- colData colData<-
 #' @importFrom Matrix colSums
 normalizeRnaCounts.se <- function(
     x,
