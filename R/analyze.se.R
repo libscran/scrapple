@@ -342,34 +342,23 @@ analyze.se <- function(
 
     } else if (length(embeddings) == 1L) {
         if (embeddings == "rna") {
-            target.embedding <- rna.pca.output.name
+            target.embedding <- .define_single_target_embedding(x, rna.altexp, rna.pca.output.name)
         } else if (embeddings == "adt") {
-            target.embedding <- adt.pca.output.name
+            target.embedding <- .define_single_target_embedding(x, adt.altexp, adt.pca.output.name)
         }
 
     } else if (length(embeddings) > 1) {
-        main.reddims <- character(0)
-        altexp.reddims <- list()
-
+        all.reddims <- list(main=character(0), altexp=list())
         if ("rna" %in% embeddings) {
-            if (is.na(rna.altexp)) {
-                main.reddims <- append(main.reddims, rna.pca.output.name)
-            } else {
-                altexp.reddims[[rna.altexp]] <- rna.pca.output.name
-            }
+            all.reddims <- .add_source_embedding_to_scale(x, rna.altexp, rna.pca.output.name, all.reddims)
         }
-        
         if ("adt" %in% embeddings) {
-            if (is.na(adt.altexp)) {
-                main.reddims <- append(main.reddims, adt.pca.output.name)
-            } else {
-                altexp.reddims[[adt.altexp]] <- adt.pca.output.name
-            }
+            all.reddims <- .add_source_embedding_to_scale(x, adt.altexp, adt.pca.output.name, all.reddims)
         }
 
         x <- .call(
             scaleByNeighbors.se,
-            list(x, output.name=scale.output.name, main.reddims=main.reddims, altexp.reddims=altexp.reddims, delayed.transpose=TRUE),
+            list(x, output.name=scale.output.name, main.reddims=all.reddims$main, altexp.reddims=all.reddims$altexp, delayed.transpose=TRUE),
             list(block=block, num.threads=num.threads, BNPARAM=BNPARAM),
             more.scale.args
         )
@@ -509,4 +498,32 @@ analyze.se <- function(
         altExp(x, altexp) <- y
         assign(envir=env, x="x", value=x)
     }
+}
+
+#' @importFrom SingleCellExperiment altExpNames
+.define_single_target_embedding <- function(x, altexp, output.name) {
+    if (!is.na(altexp)) {
+        if (is.numeric(altexp)) {
+            nm <- altExpNames(x)[altexp]
+        } else {
+            nm <- altexp
+        }
+        names(output.name) <- nm
+    }
+    output.name
+}
+
+#' @importFrom SingleCellExperiment altExpNames
+.add_source_embedding_to_scale <- function(x, altexp, output.name, collected) {
+    if (is.na(altexp)) {
+        collected$main <- append(collected$main, output.name)
+    } else {
+        if (is.numeric(altexp)) {
+            nm <- altExpNames(x)[altexp]
+        } else {
+            nm <- altexp
+        }
+        collected$altexp[[nm]] <- output.name
+    }
+    collected
 }
