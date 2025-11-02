@@ -28,7 +28,7 @@
 #' metadata(sce)$combined
 #'
 #' @seealso
-#' \code{\link{scaleByNeighbors}} from the \pkg{scrapper} package.
+#' \code{\link[scrapper]{scaleByNeighbors}} from the \pkg{scrapper} package.
 #'
 #' @export
 #' @importFrom SingleCellExperiment altExp altExpNames reducedDim reducedDimNames reducedDim<-
