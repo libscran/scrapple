@@ -4,18 +4,19 @@
 #'
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to genes and columns correspond to cells.
-#' @param factors,num.threads Arguments to pass to \code{\link[scrapper]{aggregateAcrossCells}}.
+#' @param factors,num.threads Arguments passed to \code{\link[scrapper]{aggregateAcrossCells}}.
 #' @param more.aggr.args Named list of additional arguments to pass to \code{\link[scrapper]{aggregateAcrossCells}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} to be aggregated.
-#' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the factor combinations.
-#' @param counts.name String containing the name of the \code{\link[SummarizedExperiment]{colData}} column containing the cell count for each factor combination.
+#' @param output.prefix String specifying a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns storing the factor combinations. 
+#' If \code{NULL}, no prefix is added.
+#' @param counts.name String specifying the name of the \code{\link[SummarizedExperiment]{colData}} column in which to store the cell count for each factor combination. 
 #' If \code{NULL}, the cell counts are not reported.
-#' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the combination indices.
+#' @param meta.name String specifying the name of the \code{\link[S4Vectors]{metadata}} entry in which to store additional outputs like the combination indices.
 #' If \code{NULL}, additional outputs are not reported.
 #' @param include.coldata Logical scalar indicating whether to add the aggregated \code{colData} from \code{x} to the output.
 #' @param more.coldata.args Named list of additional arguments to pass to \code{aggregateColData}.
 #' Only relevant if \code{include.coldata=TRUE}.
-#' @param altexps Unnamed integer or character vector specifyig the indices/names of alternative experiments of \code{x} to aggregate.
+#' @param altexps Unnamed integer or character vector specifying the indices/names of alternative experiments of \code{x} to aggregate.
 #' The aggregated assay from each alternative experiment is determined by \code{assay.type}.
 #'
 #' Alternatively, this may be a named integer or character vector.
@@ -26,6 +27,7 @@
 #' @param coldata \link[S4Vectors]{DataFrame} of column data, containing one row for each cell.
 #' @param index Integer vector containing the index of the factor combination to which each cell in \code{coldata} was assigned.
 #' @param number Integer specifying the total number of unique factor combinations.
+#' All elements of \code{index} should be less than \code{number}.
 #' @param only.atomic Logical scalar specifying whether to skip non-atomic, non-factor columns.
 #' @param placeholder Placeholder value to store in the output column when a factor combination does not have a single unique value. 
 #'
@@ -55,7 +57,7 @@
 #'
 #' For \code{aggregateColData}, a \link[S4Vectors]{DFrame} is returned with number of rows equal to \code{number}.
 #' Each atomic or factor column in \code{coldata} is represented by a column in the output DFrame.
-#' In each column, the \code{j}-th entry is equal to the unique value of all rows in \code{coldata} with \code{index} equal to \code{j},
+#' In each column, the \code{j}-th entry is equal to the unique value of all rows where \code{index == j},
 #' or \code{placeholder} if there is not exactly one unique value.
 #' If \code{only.atomic=FALSE}, any non-atomic/non-factor columns of \code{coldata} are represented in the output DFrame by a vector of \code{placeholder} values.
 #' If \code{only.atomic=TRUE}, any non-atomic/non-factor columns of \code{coldata} are skipped.

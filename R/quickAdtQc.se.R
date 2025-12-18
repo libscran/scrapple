@@ -5,7 +5,9 @@
 #' @param x A \link[SummarizedExperiment]{SummarizedExperiment} object or one of its subclasses.
 #' Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
 #' @param subsets,num.threads Arguments passed to \code{\link[scrapper]{computeAdtQcMetrics}}.
-#' @param num.mads,block Arguments passed to \code{\link[scrapper]{suggestAdtQcThresholds}}.
+#' @param more.suggest.args Named list of additional arguments to pass to \code{\link[scrapper]{suggestAdtQcThresholds}}.
+#' @param block Factor specifying the block of origin (e.g., batch, sample) for each cell,
+#' passed to \code{\link[scrapper]{suggestAdtQcThresholds}} and \code{\link[scrapper]{filterAdtQcMetrics}}.
 #' @param assay.type Integer or string specifying the assay of \code{x} containing the ADT count matrix.
 #' @param output.prefix String containing a prefix to add to the names of the \code{link[SummarizedExperiment]{colData}} columns containing the output statistics.
 #' @param meta.name String containing the name of the \code{\link[S4Vectors]{metadata}} entry containing additional outputs like the filtering thresholds.
@@ -44,7 +46,7 @@ quickAdtQc.se <- function(
     x,
     subsets,
     num.threads = 1,
-    num.mads = 3,
+    more.suggest.args = list(),
     block = NULL,
     assay.type = "counts",
     output.prefix = NULL, 
@@ -52,7 +54,14 @@ quickAdtQc.se <- function(
     flatten = TRUE
 ) {
     metrics <- scrapper::computeAdtQcMetrics(assay(x, assay.type, withDimnames=FALSE), subsets, num.threads=num.threads)
-    thresholds <- scrapper::suggestAdtQcThresholds(metrics, block=block, num.mads=num.mads)
+
+    thresholds <- .call(
+        scrapper::suggestAdtQcThresholds,
+        list(metrics=metrics),
+        list(block=block),
+        more.suggest.args
+    )
+
     keep <- scrapper::filterAdtQcMetrics(thresholds, metrics, block=block)
 
     df <- formatComputeAdtQcMetricsResult(metrics, flatten=flatten)
