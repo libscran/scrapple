@@ -60,8 +60,6 @@ where the name specifies an alternative experiment of \code{x} and the value is 
 \code{x} is returned with additional coordinates stored in its \code{\link[SingleCellExperiment]{reducedDims}}
 and clustering output in its \code{\link[SummarizedExperiment]{colData}}.
 Additional information may also be stored in its \code{\link[S4Vectors]{metadata}}.
-
-\code{x}
 }
 \description{
 Concurrently run all steps involving a nearest-neighbor search, using the same nearest-neighbor index.

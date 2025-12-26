@@ -29,7 +29,6 @@
 #' and clustering output in its \code{\link[SummarizedExperiment]{colData}}.
 #' Additional information may also be stored in its \code{\link[S4Vectors]{metadata}}.
 #' 
-#' @return \code{x} 
 #' @author Aaron Lun
 #' @seealso
 #' \code{\link[scrapper]{runAllNeighborSteps}} from the \pkg{scrapper} package.

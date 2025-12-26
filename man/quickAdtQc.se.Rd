@@ -9,7 +9,7 @@ quickAdtQc.se(
   x,
   subsets,
   num.threads = 1,
-  num.mads = 3,
+  more.suggest.args = list(),
   block = NULL,
   assay.type = "counts",
   output.prefix = NULL,
@@ -25,7 +25,10 @@ Rows correspond to antibody-derived tags (ADTs) and columns correspond to cells.
 
 \item{subsets, num.threads}{Arguments passed to \code{\link[scrapper]{computeAdtQcMetrics}}.}
 
-\item{num.mads, block}{Arguments passed to \code{\link[scrapper]{suggestAdtQcThresholds}}.}
+\item{more.suggest.args}{Named list of additional arguments to pass to \code{\link[scrapper]{suggestAdtQcThresholds}}.}
+
+\item{block}{Factor specifying the block of origin (e.g., batch, sample) for each cell,
+passed to \code{\link[scrapper]{suggestAdtQcThresholds}} and \code{\link[scrapper]{filterAdtQcMetrics}}.}
 
 \item{assay.type}{Integer or string specifying the assay of \code{x} containing the ADT count matrix.}
 
