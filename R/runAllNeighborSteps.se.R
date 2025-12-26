@@ -69,7 +69,7 @@ runAllNeighborSteps.se <- function(
         more.umap.args <- NULL 
     }
     if (is.null(tsne.output.name)) {
-        more.umap.args <- NULL 
+        more.tsne.args <- NULL 
     }
     if (is.null(cluster.output.name)) {
         more.cluster.graph.args <- NULL 
@@ -90,13 +90,13 @@ runAllNeighborSteps.se <- function(
         more.neighbor.args
     )
 
-    if (!is.null(tsne.output.name)) {
+    if (!is.null(outputs$runTsne)) {
         x <- .add_tsne_results(x, outputs$runTsne, output.name=tsne.output.name)
     }
-    if (!is.null(umap.output.name)) {
+    if (!is.null(outputs$runUmap)) {
         x <- .add_umap_results(x, outputs$runUmap, output.name=umap.output.name)
     }
-    if (!is.null(cluster.output.name)) {
+    if (!is.null(outputs$clusterGraph)) {
         x <- .add_build_graph_results(x, outputs$buildSnnGraph, graph.name=build.graph.name)
         x <- .add_cluster_graph_results(x, outputs$clusterGraph, output.name=cluster.output.name, meta.name=cluster.meta.name)
     }
