@@ -64,8 +64,9 @@ aggregateAcrossGenes.se <- function(
         }
         sets <- as.list(sets)
     }
+
     for (i in seq_along(sets)) {
-        if (is(sets[[i]], "DataFrame")) {
+        if (is(sets[[i]], "List")) {
             sets[[i]] <- as.list(sets[[i]])
         }
     }
